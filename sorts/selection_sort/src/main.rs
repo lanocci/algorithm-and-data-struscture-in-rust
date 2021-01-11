@@ -1,20 +1,22 @@
 use std::io;
 use common::{trace, UserInput, handle_input};
 
-fn selection_sort(mut a: Vec<i32>, n: usize) -> () {
-  for i in 1..n {
-    let mut v = a[i as usize];
-    let mut j: usize = i as usize - 1;
-    while(j >= 0 && a[j as usize] > v) {
-      a[j+1] = a[j as usize];
-      j -= 1;
+fn selection_sort(mut a: Vec<i32>) -> () {
+    for i in 0..a.len() {
+        let mut minj = i;
+        for j in i..a.len() {
+            if a[j] < a[minj] {
+                minj = j;
+            }
+        }
+        let tmp = a[minj];
+        a[minj] = a[i];
+        a[i] = tmp;
+        trace(&a);
     }
-    a[j+1 as usize] = v;
-    trace(&a);
-  }
 }
 
 fn main() {
     let input = handle_input();
-    selection_sort(input.vec, input.size);
+    selection_sort(input.vec);
 }
