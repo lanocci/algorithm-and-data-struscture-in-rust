@@ -1,21 +1,12 @@
 use std::io;
-
-fn trace(a: &Vec<i32>) -> () {
-    for i in 0..a.len() {
-        if (i > 0) {
-            print!(" ")
-        };
-        print!("{}", a[i as usize]);
-    }
-    println!("")
-}
+use common::{trace, UserInput, handle_input};
 
 fn bubble_sort(mut a: Vec<i32>) -> () {
     let mut flag: bool = true;
     let n: usize = a.len();
     while flag {
         flag = false;
-        for j in (1..n - 1).rev() {
+        for j in (1..n).rev() {
             if a[j - 1] > a[j] {
                 let tmp = a[j];
                 a[j] = a[j - 1];
@@ -28,26 +19,6 @@ fn bubble_sort(mut a: Vec<i32>) -> () {
 }
 
 fn main() {
-    println!("please specify size of the array");
-    let mut size: String = "".to_string();
-    io::stdin()
-        .read_line(&mut size)
-        .expect("failed to read size line");
-
-    println!("please specify an array to be sorted");
-    let mut vec: String = "".to_string();
-    io::stdin()
-        .read_line(&mut vec)
-        .expect("failed to read vector");
-
-    let mut size: usize = size.trim().parse().expect("failed to parse size");
-
-    let mut vec: Vec<i32> = vec
-        .trim()
-        .split(' ')
-        .collect::<Vec<&str>>()
-        .iter()
-        .map(|s| s.parse().expect("failed to parse vec element"))
-        .collect();
-    bubble_sort(vec);
+    let input = handle_input();
+    bubble_sort(input.vec);
 }
