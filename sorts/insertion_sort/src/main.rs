@@ -1,5 +1,4 @@
-use std::io;
-use common::{trace, UserInput, handle_input};
+use common::{trace, UserInput, handle_numeric_input};
 
 fn insertion_sort(mut a: Vec<i32>, n: usize) -> () {
   for i in 1..n {
@@ -15,6 +14,6 @@ fn insertion_sort(mut a: Vec<i32>, n: usize) -> () {
 }
 
 fn main() {
-  let input: UserInput = handle_input();
+  let input: UserInput = handle_numeric_input();
   insertion_sort(input.vec, input.size);
 }

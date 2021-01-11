@@ -1,5 +1,4 @@
-use std::io;
-use common::{trace, UserInput, handle_input};
+use common::{trace, UserInput, handle_numeric_input};
 
 fn selection_sort(mut a: Vec<i32>) -> () {
     for i in 0..a.len() {
@@ -17,6 +16,6 @@ fn selection_sort(mut a: Vec<i32>) -> () {
 }
 
 fn main() {
-    let input = handle_input();
+    let input = handle_numeric_input();
     selection_sort(input.vec);
 }

@@ -4,4 +4,5 @@ members = [
   "bubble_sort",
   "insertion_sort",
   "selection_sort",
+  "judge_stable",
 ]
