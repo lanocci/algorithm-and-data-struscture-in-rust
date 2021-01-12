@@ -10,14 +10,6 @@ pub fn trace<T>(a: &Vec<T>) -> ()
     println!("")
 }
 
-//pub fn trace(a: &Vec<String>) -> () {
-//  for i in 0..a.len() {
-//    if(i > 0) {print!(" ")};
-//    print!("{}", a[i]);
-//  }
-//  println!("")
-//}
-
 pub struct UserInput {
     pub vec: Vec<i32>,
     pub size: usize
