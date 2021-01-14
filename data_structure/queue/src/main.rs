@@ -1,11 +1,11 @@
 use std::io::*;
-use std::str::FromStr;
-use std::collections::*;
 use std::cmp::min;
+use std::collections::*;
+use util::Scanner;
 
 fn main() {
     std::thread::Builder::new()
-        .stack_size(104857600)
+        .stack_size(1048576)
         .spawn(solve)
         .unwrap()
         .join()
@@ -42,63 +42,3 @@ fn solve() {
         }
     }
 }
-
-struct Scanner<R:Read> {
-    reader: R,
-    buffer: String,
-}
-
-impl<R: Read> Scanner<R> {
-    fn new(reader: R) -> Scanner<R> {
-        Scanner { reader: reader, buffer: String::new() }
-    }
-
-    fn read_buffer<T: FromStr>(&mut self) {
-        self.buffer = self
-            .reader
-            .by_ref()
-            .bytes()
-            .map(|c| c.unwrap() as char)
-            .skip_while(|c| c.is_whitespace())
-            .take_while(|c| !c.is_whitespace())
-            .collect::<String>();
-    }
-
-    fn safe_read<T: FromStr>(&mut self) -> Option<T> {
-        self.read_buffer::<T>();
-        if self.buffer.is_empty() {
-            None
-        } else {
-            self.buffer.parse::<T>().ok()
-        }
-    }
-
-    fn read<T: FromStr>(&mut self) -> T {
-        if let Some(s) = self.safe_read() {
-            s
-        } else {
-            writeln!(stderr(), "Terminated with EOF").unwrap();
-            std::process::exit(0);
-        }
-    }
-
-    //fn vec<T: FromStr>(&mut self, len: usize) -> Vec<T> {
-    //    (0..len).map(|_| self.read())
-    //        .collect()
-    //}
-
-    //fn matrix<T: FromStr>(&mut self, row: usize, col: usize) -> Vec<Vec<T>> {
-    //    (0..row).map(|_| self.vec(col))
-    //        .collect()
-    //}
-}
-
-//trait Joinable {
-//    fn join(self, sep: &str) -> String;
-//}
-//
-//impl<U: ToString, T: Iterator<Item=U>> Joinable for T {
-//    fn join(self, sep: &str) -> String {
-//        self.map(|x| x.to_string()).collect::<Vec<_>>().join(sep)
-//    }
-//}
