@@ -2,4 +2,5 @@
 members = [
   "stack",
   "queue",
+  "doubly_linked_list",
 ]
