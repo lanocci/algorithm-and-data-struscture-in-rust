@@ -1,6 +1,13 @@
 [workspace]
 members = [
-  "data_structure",
-  "sorts",
+  "data_structure/queue",
+  "data_structure/stack",
+  "data_structure/doubly_linked_list",
+  "sorts/bubble_sort",
+  "sorts/insertion_sort",
+  "sorts/judge_stable",
+  "sorts/selection_sort",
+  "search/linear_search",
   "util",
 ]
+exclude = ["data_structure", "sorts", "search"]
