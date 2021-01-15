@@ -8,6 +8,7 @@ members = [
   "sorts/judge_stable",
   "sorts/selection_sort",
   "search/linear_search",
+  "search/binary_search",
   "util",
 ]
 exclude = ["data_structure", "sorts", "search"]
