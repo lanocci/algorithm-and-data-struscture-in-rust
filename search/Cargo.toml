@@ -2,4 +2,5 @@
 members = [
   "linear_search",
   "binary_search",
+  "hash",
 ]

@@ -9,6 +9,7 @@ members = [
   "sorts/selection_sort",
   "search/linear_search",
   "search/binary_search",
+  "search/hash",
   "util",
 ]
 exclude = ["data_structure", "sorts", "search"]
