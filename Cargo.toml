@@ -10,6 +10,7 @@ members = [
   "search/linear_search",
   "search/binary_search",
   "search/hash",
+  "strategy/devide_and_concur_search",
   "util",
 ]
-exclude = ["data_structure", "sorts", "search"]
+exclude = ["data_structure", "sorts", "search", "strategy"]
