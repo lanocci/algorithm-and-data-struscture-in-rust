@@ -5,4 +5,5 @@ members = [
   "insertion_sort",
   "selection_sort",
   "judge_stable",
+  "merge_sort",
 ]

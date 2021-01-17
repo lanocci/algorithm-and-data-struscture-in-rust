@@ -7,6 +7,7 @@ members = [
   "sorts/insertion_sort",
   "sorts/judge_stable",
   "sorts/selection_sort",
+  "sorts/merge_sort",
   "search/linear_search",
   "search/binary_search",
   "search/hash",
