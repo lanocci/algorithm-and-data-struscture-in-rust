@@ -6,4 +6,5 @@ members = [
   "selection_sort",
   "judge_stable",
   "merge_sort",
+  "partition",
 ]
