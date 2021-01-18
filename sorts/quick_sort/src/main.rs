@@ -17,6 +17,12 @@ impl Quantifiable for Card {
     }
 }
 
+impl Card {
+    fn cmp(&self, other: &Card) -> bool {
+        self.suit == other.suit && self.number == other.number
+    }
+}
+
 fn main() {
     std::thread::Builder::new()
         .stack_size(10485760000)
@@ -39,7 +45,20 @@ fn solve() {
         vec.push(Card{ suit: s, number: n});
     }
     quick_sort(&mut vec, 0, n - 1);
-    println!("done!");
+
+    let mut merge_sorted = vec.clone();
+    merge_sort(&mut merge_sorted, 0, n);
+    let mut is_stable = true;
+    for i in 0..n {
+        if !merge_sorted[i].cmp(&vec[i]) {
+            is_stable = false;
+        }
+    }
+    if is_stable {
+        println!("Stable");
+    } else {
+        println!("Not stable");
+    }
     for i in 0..n {
         println!("{} {}", vec[i].suit, vec[i].number);
     }
@@ -68,4 +87,53 @@ where T: Quantifiable + Clone {
     a[r] = a[i].clone();
     a[i] = x;
     i
+}
+
+fn merge(a: &mut Vec<Card>, left: usize, mid: usize, right: usize) {
+    let n1 = mid - left;
+    let n2 = right - mid;
+    let mut a_l: Vec<Card> = Vec::with_capacity(n1);
+    for i in left..mid {
+        a_l.push(a[i].clone());
+    }
+    let mut a_r: Vec<Card> = Vec::with_capacity(n2);
+    for j in mid..right {
+        a_r.push(a[j].clone());
+    }
+
+    let mut i = 0;
+    let mut j = 0;
+    for k in left..right {
+        match (a_l.get(i), a_r.get(j)) {
+            (Some(l), Some(r)) => {
+                if l.number <= r.number {
+                    a[k] = l.clone();
+                    i += 1;
+                } else {
+                    a[k] = r.clone();
+                    j += 1;
+                }
+            }
+            (Some(l), None) => {
+                a[k] = l.clone();
+                i += 1;
+            }
+            (None, Some(r)) => {
+                a[k] = r.clone();
+                j += 1;
+            }
+            (None, None) => {
+                panic!()
+            }
+        }
+    }
+}
+
+fn merge_sort(a: &mut Vec<Card>, left: usize, right: usize) {
+    if left + 1 < right {
+        let mid = (left + right) / 2;
+        merge_sort(a, left, mid);
+        merge_sort(a, mid, right);
+        merge(a, left, mid, right);
+    }
 }
