@@ -7,4 +7,5 @@ members = [
   "judge_stable",
   "merge_sort",
   "partition",
+  "quick_sort",
 ]

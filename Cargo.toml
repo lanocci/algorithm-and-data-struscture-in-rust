@@ -9,6 +9,7 @@ members = [
   "sorts/selection_sort",
   "sorts/merge_sort",
   "sorts/partition",
+  "sorts/quick_sort",
   "search/linear_search",
   "search/binary_search",
   "search/hash",
