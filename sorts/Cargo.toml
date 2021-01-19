@@ -8,4 +8,5 @@ members = [
   "merge_sort",
   "partition",
   "quick_sort",
+  "counting_sort",
 ]
