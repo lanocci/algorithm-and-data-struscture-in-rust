@@ -3,4 +3,5 @@ members = [
   "stack",
   "queue",
   "doubly_linked_list",
+  "rooted_tree",
 ]

@@ -3,6 +3,7 @@ members = [
   "data_structure/queue",
   "data_structure/stack",
   "data_structure/doubly_linked_list",
+  "data_structure/rooted_tree",
   "sorts/bubble_sort",
   "sorts/insertion_sort",
   "sorts/judge_stable",
