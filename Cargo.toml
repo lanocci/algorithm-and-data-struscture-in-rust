@@ -4,6 +4,7 @@ members = [
   "data_structure/stack",
   "data_structure/doubly_linked_list",
   "data_structure/rooted_tree",
+  "data_structure/binry_tree",
   "sorts/bubble_sort",
   "sorts/insertion_sort",
   "sorts/judge_stable",

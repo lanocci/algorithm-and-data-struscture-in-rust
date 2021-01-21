@@ -4,4 +4,5 @@ members = [
   "queue",
   "doubly_linked_list",
   "rooted_tree",
+  "binary_tree",
 ]
