@@ -1,34 +1,12 @@
 use std::io::*;
-use std::cmp::max;
 use util::Scanner;
+use std::cmp::max;
 
 #[derive(Clone)]
 struct Node {
     pub parent: Option<usize>,
     pub left: Option<usize>,
     pub right: Option<usize>,
-}
-
-impl Node {
-    fn set_left(&mut self, id: i32) {
-        if id >= 0 {
-            self.left = Some(id as usize);
-        } else {
-            self.left = None;
-        }
-    }
-
-    fn set_right(&mut self, id: i32) {
-        if id >= 0 {
-            self.right = Some(id as usize);
-        } else {
-            self.right = None;
-        }
-    }
-
-    fn set_parent(&mut self, id: usize) {
-        self.parent = Some(id);
-    }
 }
 
 fn calc_depth(a: &Vec<Node>, depths: &mut Vec<usize>, idx: usize, depth: usize) {
@@ -80,17 +58,17 @@ fn solve() {
     let mut depths: Vec<usize> = vec![0; n];
     let mut heights: Vec<usize> = vec![0; n];
 
-    for i in 0..n {
-        let id = sc.read();
+    for _ in 0..n {
+        let id: usize = sc.read();
         let left: i32 = sc.read();
         let right: i32 = sc.read();
-        nodes[i].set_left(left);
-        nodes[i].set_right(right);
-        if let Some(left) = nodes[i].left {
-            nodes[left].set_parent(id);
+        if left >= 0 {
+            nodes[id].left = Some(left as usize);
+            nodes[left as usize].parent = Some(id);
         }
-        if let Some(right) = nodes[i].right {
-            nodes[right].set_parent(id);
+        if right >= 0 {
+            nodes[id].right = Some(right as usize);
+            nodes[right as usize].parent = Some(id);
         }
     }
     let mut r: usize = 0;

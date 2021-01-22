@@ -47,13 +47,13 @@ fn solve() {
     }
 
     println!("Preorder");
-    println!("{}", preorder(&nodes, root_idx).iter().join(" "));
+    println!(" {}", preorder(&nodes, root_idx).iter().join(" "));
 
     println!("Inorder");
-    println!("{}", inorder(&nodes, root_idx).iter().join(" "));
+    println!(" {}", inorder(&nodes, root_idx).iter().join(" "));
 
     println!("Postorder");
-    println!("{}", postorder(&nodes, root_idx).iter().join(" "));
+    println!(" {}", postorder(&nodes, root_idx).iter().join(" "));
 
 }
 
