@@ -50,8 +50,10 @@ fn solve() {
     println!("{}", preorder(&nodes, root_idx).iter().join(" "));
 
     println!("Inorder");
+    println!("{}", inorder(&nodes, root_idx).iter().join(" "));
 
     println!("Postorder");
+    println!("{}", postorder(&nodes, root_idx).iter().join(" "));
 
 }
 
@@ -70,5 +72,44 @@ fn preorder(nodes: &Vec<Node>, idx: usize) -> Vec<usize> {
     let mut result = vec![idx];
     result.append(&mut lefts);
     result.append(&mut rights);
+    result
+
+}
+
+fn inorder(nodes: &Vec<Node>, idx: usize) -> Vec<usize> {
+    let mut lefts: Vec<usize> = if let Some(left) = nodes[idx].left {
+        inorder(nodes, left)
+    } else {
+        Vec::new()
+    };
+
+    let mut rights: Vec<usize> = if let Some(right) = nodes[idx].right {
+        inorder(nodes, right)
+    } else {
+        Vec::new()
+    };
+
+    let mut result = lefts;
+    result.push(idx);
+    result.append(&mut rights);
+    result
+}
+
+fn postorder(nodes: &Vec<Node>, idx: usize) -> Vec<usize> {
+    let mut lefts: Vec<usize> = if let Some(left) = nodes[idx].left {
+        postorder(nodes, left)
+    } else {
+        Vec::new()
+    };
+
+    let mut rights: Vec<usize> = if let Some(right) = nodes[idx].right {
+        postorder(nodes, right)
+    } else {
+        Vec::new()
+    };
+
+    let mut result = lefts;
+    result.append(&mut rights);
+    result.push(idx);
     result
 }
