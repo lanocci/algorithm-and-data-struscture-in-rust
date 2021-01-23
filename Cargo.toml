@@ -6,6 +6,7 @@ members = [
   "data_structure/rooted_tree",
   "data_structure/binry_tree",
   "data_structure/tree_walk",
+  "data_structure/binry_search_tree",
   "sorts/bubble_sort",
   "sorts/insertion_sort",
   "sorts/judge_stable",

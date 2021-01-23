@@ -6,4 +6,5 @@ members = [
   "rooted_tree",
   "binary_tree",
   "tree_walk",
+  "binary_search_tree",
 ]
