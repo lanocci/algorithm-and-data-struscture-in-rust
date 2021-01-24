@@ -30,6 +30,10 @@ fn solve() {
             "print" => {
                 tree.print();
             }
+            "find" => {
+                let key = sc.read();
+                tree.find(key);
+            }
             _ => {
                 panic!();
             }
@@ -71,6 +75,27 @@ impl<T> BST<T> where T: Ord + Display {
                 } else {
                     right.borrow_mut().insert(z);
                 }
+            }
+        }
+    }
+
+    fn find(&self, given: T) {
+        match self {
+            Self::Node {
+                ref key,
+                ref left,
+                ref right,
+            } => {
+                if &given == key {
+                    println!("yes");
+                } else if &given < key  {
+                    left.borrow().find(given);
+                } else {
+                    right.borrow().find(given);
+                }
+            },
+            Self::Nil => {
+                println!("no");
             }
         }
     }
