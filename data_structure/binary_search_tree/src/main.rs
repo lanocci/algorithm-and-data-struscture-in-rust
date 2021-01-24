@@ -1,6 +1,5 @@
 use std::io::*;
 use std::fmt::Display;
-use std::rc::Rc;
 use std::cell::RefCell;
 use util::Scanner;
 
@@ -19,7 +18,7 @@ fn solve() {
     let mut sc = Scanner::new(cin);
 
     let n: usize = sc.read();
-    let mut tree: BST::<usize> = BST::new();
+    let mut tree: BST::<i32> = BST::new();
 
     for _ in 0..n {
         let opr: String = sc.read();
@@ -29,9 +28,7 @@ fn solve() {
                 tree.insert(key);
             }
             "print" => {
-                tree.print_inorder();
-                println!("");
-                tree.print_preorder();
+                tree.print();
             }
             _ => {
                 panic!();
@@ -45,8 +42,8 @@ enum BST<T> where T: Ord + Display{
     Nil,
     Node {
         key: T,
-        left: Rc<RefCell<BST<T>>>,
-        right: Rc<RefCell<BST<T>>>,
+        left: Box<RefCell<BST<T>>>,
+        right: Box<RefCell<BST<T>>>,
     },
 }
 
@@ -60,8 +57,8 @@ impl<T> BST<T> where T: Ord + Display {
             Self::Nil => {
                 *self = Self::Node {
                     key: z,
-                    left: Rc::new(RefCell::new(Self::Nil)),
-                    right: Rc::new(RefCell::new(Self::Nil)),
+                    left: Box::new(RefCell::new(Self::Nil)),
+                    right: Box::new(RefCell::new(Self::Nil)),
                 }
             },
             Self::Node {
@@ -76,6 +73,13 @@ impl<T> BST<T> where T: Ord + Display {
                 }
             }
         }
+    }
+
+    fn print(&self) {
+        self.print_inorder();
+        println!("");
+        self.print_preorder();
+        println!("");
     }
 
     fn print_inorder(&self) {
