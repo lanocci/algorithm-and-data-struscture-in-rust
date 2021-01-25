@@ -35,6 +35,10 @@ fn solve() {
                 let key = sc.read();
                 tree.find(key);
             }
+            "delete" => {
+                let key = sc.read();
+                tree.delete(key);
+            }
             _ => {
                 panic!();
             }
@@ -103,6 +107,8 @@ impl<T> BST<T> where T: Ord + Display + Copy + PartialEq {
     }
 
     fn delete(&mut self, given: T) {
+        let mut replace_target: Option<Rc<RefCell<BST<T>>>> = None;
+        let mut should_delete_self = false;
         if let Self::Node {
             ref mut key,
             ref mut left,
@@ -110,32 +116,52 @@ impl<T> BST<T> where T: Ord + Display + Copy + PartialEq {
         } = self {
             if &given == key {
                 if *left.borrow() == Self::Nil && *right.borrow() == Self::Nil {
-                    *self = Self::Nil;
+                    should_delete_self = true;
                 } else if *left.borrow() == Self::Nil {
-                    *self = *right.borrow();
+                    replace_target = Some(Rc::clone(right));
                 } else if *right.borrow() == Self::Nil {
-                    *self = *left.borrow();
+                    replace_target = Some(Rc::clone(left));
                 } else {
-                    let r = *right.borrow_mut();
-                    *key = r.get_key();
-                    r.delete(*key);
+                    let r = Rc::clone(right);
+                    *key = r.borrow_mut().minimum();
+                    r.borrow_mut().delete(*key);
                 }
             } else if &given < key {
-                left.borrow_mut().delete(given);
+                let l = left.clone();
+                l.borrow_mut().delete(given);
             } else {
-                right.borrow_mut().delete(given);
+                let r = right.clone();
+                r.borrow_mut().delete(given);
+            }
+        }
+        if should_delete_self {
+            *self = Self::Nil;
+        } else if let Some(target) = replace_target {
+            if let Self::Node {ref key, ref left, ref right} = *target.borrow() {
+                *self = Self::Node {
+                    key: *key,
+                    left: Rc::clone(left),
+                    right: Rc::clone(right),
+                }
             }
         }
     }
 
-    fn get_key(&self) -> T {
-        match self {
-            Self::Nil => {
-                panic!();
-            },
-            Self::Node { key, .. } => {
+    fn minimum(&self) -> T {
+        let mut next = None;
+        if let Self::Node {ref left, ref key,..} = self {
+            if let Self::Node {left: ref l,..} = *left.borrow() {
+                next = Some(l.clone());
+            }
+            if let Some(n) = next {
+                let n = n.clone();
+                let n = n.borrow();
+                n.minimum()
+            } else {
                 *key
             }
+        } else {
+            panic!();
         }
     }
 
