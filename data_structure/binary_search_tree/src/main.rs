@@ -1,5 +1,6 @@
 use std::io::*;
 use std::fmt::Display;
+use std::rc::Rc;
 use std::cell::RefCell;
 use util::Scanner;
 
@@ -42,16 +43,17 @@ fn solve() {
 
 }
 
-enum BST<T> where T: Ord + Display{
+#[derive(PartialEq)]
+enum BST<T> where T: Ord + Display + Copy + PartialEq {
     Nil,
     Node {
         key: T,
-        left: Box<RefCell<BST<T>>>,
-        right: Box<RefCell<BST<T>>>,
+        left: Rc<RefCell<BST<T>>>,
+        right: Rc<RefCell<BST<T>>>,
     },
 }
 
-impl<T> BST<T> where T: Ord + Display {
+impl<T> BST<T> where T: Ord + Display + Copy + PartialEq {
     fn new() -> Self {
         Self::Nil
     }
@@ -61,8 +63,8 @@ impl<T> BST<T> where T: Ord + Display {
             Self::Nil => {
                 *self = Self::Node {
                     key: z,
-                    left: Box::new(RefCell::new(Self::Nil)),
-                    right: Box::new(RefCell::new(Self::Nil)),
+                    left: Rc::new(RefCell::new(Self::Nil)),
+                    right: Rc::new(RefCell::new(Self::Nil)),
                 }
             },
             Self::Node {
@@ -96,6 +98,43 @@ impl<T> BST<T> where T: Ord + Display {
             },
             Self::Nil => {
                 println!("no");
+            }
+        }
+    }
+
+    fn delete(&mut self, given: T) {
+        if let Self::Node {
+            ref mut key,
+            ref mut left,
+            ref mut right,
+        } = self {
+            if &given == key {
+                if *left.borrow() == Self::Nil && *right.borrow() == Self::Nil {
+                    *self = Self::Nil;
+                } else if *left.borrow() == Self::Nil {
+                    *self = *right.borrow();
+                } else if *right.borrow() == Self::Nil {
+                    *self = *left.borrow();
+                } else {
+                    let r = *right.borrow_mut();
+                    *key = r.get_key();
+                    r.delete(*key);
+                }
+            } else if &given < key {
+                left.borrow_mut().delete(given);
+            } else {
+                right.borrow_mut().delete(given);
+            }
+        }
+    }
+
+    fn get_key(&self) -> T {
+        match self {
+            Self::Nil => {
+                panic!();
+            },
+            Self::Node { key, .. } => {
+                *key
             }
         }
     }
