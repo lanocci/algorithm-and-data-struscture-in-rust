@@ -123,7 +123,7 @@ impl<T> BST<T> where T: Ord + Display + Copy + PartialEq {
                     replace_target = Some(Rc::clone(left));
                 } else {
                     let r = Rc::clone(right);
-                    *key = r.borrow_mut().minimum();
+                    *key = r.borrow().get_minimum();
                     r.borrow_mut().delete(*key);
                 }
             } else if &given < key {
@@ -147,16 +147,16 @@ impl<T> BST<T> where T: Ord + Display + Copy + PartialEq {
         }
     }
 
-    fn minimum(&self) -> T {
+    fn get_minimum(&self) -> T {
         let mut next = None;
         if let Self::Node {ref left, ref key,..} = self {
             if let Self::Node {left: ref l,..} = *left.borrow() {
                 next = Some(l.clone());
             }
             if let Some(n) = next {
-                let n = n.clone();
+                let n = Rc::clone(&n);
                 let n = n.borrow();
-                n.minimum()
+                n.get_minimum()
             } else {
                 *key
             }
