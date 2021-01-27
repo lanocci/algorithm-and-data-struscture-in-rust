@@ -110,36 +110,83 @@ impl<T> BST<T> where T: Ord + Display + Copy + PartialEq {
         }
     }
 
+    fn get_left(&self) -> Rc<RefCell<Self>> {
+        match self {
+            Self::Nil => {
+                Rc::new(RefCell::new(Self::Nil))
+            },
+            Self::Node{ref left, ..}  => {
+                left.clone()
+            }
+        }
+    }
+
+    fn get_right(&self) -> Rc<RefCell<Self>> {
+        match self {
+            Self::Nil => {
+                Rc::new(RefCell::new(Self::Nil))
+            },
+            Self::Node{ref right, ..}  => {
+                right.clone()
+            }
+        }
+    }
+
+    fn get_parent(&self) -> Rc<RefCell<Self>> {
+        match self {
+            Self::Nil => {
+                Rc::new(RefCell::new(Self::Nil))
+            },
+            Self::Node{ref parent, ..}  => {
+                parent.clone()
+            }
+        }
+    }
+
+    fn get_key(&self) -> Option<T> {
+        match self {
+            Self::Nil => {
+                None
+            },
+            Self::Node {ref key, ..} => {
+                Some(*key)
+            }
+        }
+    }
+    fn set_key(&mut self, new_key: T) {
+        if let Self::Node {ref mut key, ..} = self {
+            *key = new_key;
+        }
+    }
+
     fn delete(&mut self, given: T) {
         let mut replace_target: Option<Rc<RefCell<BST<T>>>> = None;
         let mut should_delete_self = false;
-        if let Self::Node {
-            ref mut key,
-            ref mut left,
-            ref mut right,
-            ..
-        } = self {
-            if &given == key {
-                if *left.borrow() == Self::Nil && *right.borrow() == Self::Nil {
+        if let mut s@Self::Node {..} = self.clone() {
+            if given == s.get_key().unwrap() {
+                if *s.get_left().borrow() == Self::Nil && *s.get_right().borrow() == Self::Nil {
                     should_delete_self = true;
-                } else if *left.borrow() == Self::Nil {
-                    replace_target = Some(Rc::clone(right));
-                } else if *right.borrow() == Self::Nil {
-                    replace_target = Some(Rc::clone(left));
+                } else if *s.get_left().borrow() == Self::Nil {
+                    replace_target = Some(Rc::clone(&s.get_right()));
+                } else if *s.get_right().borrow() == Self::Nil {
+                    replace_target = Some(Rc::clone(&s.get_left()));
                 } else {
-                    let r = Rc::clone(right);
-                    let successor = self.get_successor();
+                    let r = Rc::clone(&s.get_right());
+                    let successor = s.get_successor();
                     let mut successor = successor.borrow_mut();
-                    if let Self::Node{key: ref k, ..} = *successor {
-                        let sv = *k;
-                        successor.delete(sv);
-                    }
+                    let new_key = if let Self::Node{key: ref k, ..} = *successor {
+                        *k
+                    } else {
+                        given
+                    };
+                    successor.delete(new_key);
+                    s.set_key(new_key);
                 }
-            } else if &given < key {
-                let l = left.clone();
+            } else if given < s.get_key().unwrap() {
+                let l = s.get_left().clone();
                 l.borrow_mut().delete(given);
             } else {
-                let r = right.clone();
+                let r = s.get_right().clone();
                 r.borrow_mut().delete(given);
             }
         }
