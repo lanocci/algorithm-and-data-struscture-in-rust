@@ -19,25 +19,25 @@ fn solve() {
     let mut sc = Scanner::new(cin);
 
     let n: usize = sc.read();
-    let mut tree: BST::<i32> = BST::new();
+    let mut tree: Rc<RefCell<BST<i32>>> = Rc::new(RefCell::new(BST::new()));
 
     for _ in 0..n {
         let opr: String = sc.read();
         match opr.as_str() {
             "insert" => {
                 let key = sc.read();
-                tree.insert(key);
+                tree.borrow_mut().insert(key);
             }
             "print" => {
-                tree.print();
+                tree.borrow().print();
             }
             "find" => {
                 let key = sc.read();
-                tree.find(key);
+                tree.borrow().find(key);
             }
             "delete" => {
                 let key = sc.read();
-                tree.delete(key);
+                BST::delete(Rc::clone(&tree), key);
             }
             _ => {
                 panic!();
@@ -159,42 +159,44 @@ impl<T> BST<T> where T: Ord + Display + Copy + PartialEq {
         }
     }
 
-    fn delete(&mut self, given: T) {
+    fn delete(node: Rc<RefCell<Self>>, given: T) {
         let mut replace_target: Option<Rc<RefCell<BST<T>>>> = None;
         let mut should_delete_self = false;
-        if let mut s@Self::Node {..} = self.clone() {
-            if given == s.get_key().unwrap() {
-                if *s.get_left().borrow() == Self::Nil && *s.get_right().borrow() == Self::Nil {
-                    should_delete_self = true;
-                } else if *s.get_left().borrow() == Self::Nil {
-                    replace_target = Some(Rc::clone(&s.get_right()));
-                } else if *s.get_right().borrow() == Self::Nil {
-                    replace_target = Some(Rc::clone(&s.get_left()));
-                } else {
-                    let r = Rc::clone(&s.get_right());
-                    let successor = s.get_successor();
-                    let mut successor = successor.borrow_mut();
-                    let new_key = if let Self::Node{key: ref k, ..} = *successor {
-                        *k
+        match &*node.borrow_mut() {
+            s@Self::Node{..} => {
+                if given == s.get_key().unwrap() {
+                    if *s.get_left().borrow() == Self::Nil && *s.get_right().borrow() == Self::Nil {
+                        should_delete_self = true;
+                    } else if *s.get_left().borrow() == Self::Nil {
+                        replace_target = Some(Rc::clone(&s.get_right()));
+                    } else if *s.get_right().borrow() == Self::Nil {
+                        replace_target = Some(Rc::clone(&s.get_left()));
                     } else {
-                        given
-                    };
-                    successor.delete(new_key);
-                    s.set_key(new_key);
+                        let successor = s.get_successor();
+                        let new_key = if let Self::Node{key: ref k, ..} = *successor.borrow() {
+                            *k
+                        } else {
+                            given
+                        };
+                        Self::delete(successor, new_key);
+                    }
+                } else if given < s.get_key().unwrap() {
+                    let l = s.get_left().clone();
+                    Self::delete(l, given);
+                } else {
+                    let r = s.get_right().clone();
+                    Self::delete(r, given);
                 }
-            } else if given < s.get_key().unwrap() {
-                let l = s.get_left().clone();
-                l.borrow_mut().delete(given);
-            } else {
-                let r = s.get_right().clone();
-                r.borrow_mut().delete(given);
+            },
+            Self::Nil => {
+                ();
             }
         }
         if should_delete_self {
-            *self = Self::Nil;
+            *node.borrow_mut() = Self::Nil;
         } else if let Some(target) = replace_target {
             if let Self::Node {ref key, ref parent, ref left, ref right} = *target.borrow() {
-                *self = Self::Node {
+                *node.borrow_mut() = Self::Node {
                     key: *key,
                     parent: Rc::clone(parent),
                     left: Rc::clone(left),
@@ -209,11 +211,10 @@ impl<T> BST<T> where T: Ord + Display + Copy + PartialEq {
             Self::Nil => {
                 Rc::new(RefCell::new(self.clone()))
             },
-            Self::Node { ref parent, ref right, ..} => {
+            Self::Node {parent, right, ..} => {
                 match *right.borrow() {
-                    Self::Node { right: ref r, .. } => {
-                        let r = r.borrow();
-                        r.get_minimum()
+                    Self::Node {ref key, ..} => {
+                        Self::get_minimum(right.clone())
                     },
                     Self::Nil => {
                         let mut y = parent.clone();
@@ -250,12 +251,15 @@ impl<T> BST<T> where T: Ord + Display + Copy + PartialEq {
         }
     }
 
-    fn get_minimum(&self) -> Rc<RefCell<Self>> {
-        if let Self::Node {ref left, ..} = self {
-            if let Self::Node {left: ref l, ..} = *left.borrow() {
-                l.borrow().get_minimum()
-            } else {
-                left.clone()
+    fn get_minimum(node: Rc<RefCell<Self>>) -> Rc<RefCell<Self>> {
+        if let Self::Node {left, ..} = &*node.borrow() {
+            match *left.borrow() {
+                Self::Node{..} => {
+                    Self::get_minimum(left.clone())
+                },
+                Self::Nil => {
+                    node.clone()
+                }
             }
         } else {
             Rc::new(RefCell::new(Self::Nil))
