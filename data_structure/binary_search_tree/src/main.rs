@@ -47,7 +47,7 @@ fn solve() {
 
 }
 
-#[derive(PartialEq)]
+#[derive(PartialEq, Clone)]
 enum BST<T> where T: Ord + Display + Copy + PartialEq {
     Nil,
     Node {
@@ -129,14 +129,10 @@ impl<T> BST<T> where T: Ord + Display + Copy + PartialEq {
                 } else {
                     let r = Rc::clone(right);
                     let successor = self.get_successor();
-                    match *successor.borrow_mut() {
-                        s@Self::Node{..} => {
-                            let sv = *s.key;
-                            s.delete(sv);
-                        }
-                        Self::Nil => {
-                            ();
-                        }
+                    let mut successor = successor.borrow_mut();
+                    if let Self::Node{key: ref k, ..} = *successor {
+                        let sv = *k;
+                        successor.delete(sv);
                     }
                 }
             } else if &given < key {
@@ -164,24 +160,40 @@ impl<T> BST<T> where T: Ord + Display + Copy + PartialEq {
     fn get_successor(&self) -> Rc<RefCell<Self>> {
         match self {
             Self::Nil => {
-                self
+                Rc::new(RefCell::new(self.clone()))
             },
-            Self::Node { ref right, ..} => {
+            Self::Node { ref parent, ref right, ..} => {
                 match *right.borrow() {
-                    Self::Node { ref right: r, .. } => {
-                        let r = *right.borrow();
+                    Self::Node { right: ref r, .. } => {
+                        let r = r.borrow();
                         r.get_minimum()
                     },
                     Self::Nil => {
-                        let mut y = self.parent.clone();
+                        let mut y = parent.clone();
+                        let mut x = Rc::new(RefCell::new(self.clone()));
                         loop {
-                            let x = y;
-                            y = *y.parent.clone();
-                            if let Self::Nil = *y.borrow() {
-                                if  *y.borrow().left == *x.borrow() {
+                            match (&*y.borrow() , &*x.borrow()) {
+                                (Self::Node{left: ref yl, ..}, Self::Node{key: ref xk, ..}) => {
+                                    if let Self::Node{key: ref ylk, ..} = *yl.borrow() {
+                                        if *ylk == *xk {
+                                            break;
+                                        }
+                                    }
+                                },
+                                (Self::Nil, _) => {
                                     break;
+                                },
+                                _ => {
+                                    ()
                                 }
                             }
+                            x = y.clone();
+                            let yp = if let Self::Node{parent: ref ypr, ..} = *y.borrow() {
+                                ypr.clone()
+                            } else {
+                                Rc::new(RefCell::new(Self::Nil))
+                            };
+                            y = yp.clone();
                         }
                         y.clone()
                     }
@@ -189,32 +201,17 @@ impl<T> BST<T> where T: Ord + Display + Copy + PartialEq {
                 }
             }
         }
-//        let mut next = None;
-//        if let Self::Node {ref left, ref key,..} = self {
-//            if let Self::Node {left: ref l,..} = *left.borrow() {
-//                next = Some(l.clone());
-//            }
-//            if let Some(n) = next {
-//                let n = Rc::clone(&n);
-//                let n = n.borrow();
-//                n.get_minimum()
-//            } else {
-//                Some(*key)
-//            }
-//        } else {
-//            None
-//        }
     }
 
     fn get_minimum(&self) -> Rc<RefCell<Self>> {
         if let Self::Node {ref left, ..} = self {
-            if let Self::Node {ref l, ..} = left {
+            if let Self::Node {left: ref l, ..} = *left.borrow() {
                 l.borrow().get_minimum()
             } else {
                 left.clone()
             }
         } else {
-            Self::Nil
+            Rc::new(RefCell::new(Self::Nil))
         }
     }
 
