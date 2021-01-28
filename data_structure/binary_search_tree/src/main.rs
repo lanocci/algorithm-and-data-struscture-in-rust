@@ -88,6 +88,7 @@ impl<T> BST<T> where T: Ord + Display + Copy + PartialEq {
         }
     }
 
+
     fn find(&self, given: T) {
         match self {
             Self::Node {
@@ -168,43 +169,13 @@ impl<T> BST<T> where T: Ord + Display + Copy + PartialEq {
     fn delete(&mut self, given: T) {
         let n = self.clone();
         self.delete_rec(n, given);
-//        let mut replace_target: Option<Rc<RefCell<BST<T>>>> = None;
-//        let mut should_delete_self = false;
-//        if should_delete_self {
-//            *node.borrow_mut() = Self::Nil;
-//        } else if let Some(target) = replace_target {
-//            if let Self::Node {ref key, ref parent, ref left, ref right} = *target.borrow() {
-//                *node.borrow_mut() = Self::Node {
-//                    key: *key,
-//                    parent: Rc::clone(parent),
-//                    left: Rc::clone(left),
-//                    right: Rc::clone(right),
-//                }
-//            }
-//        }
     }
 
     fn delete_rec(&mut self, node: Self, key: T) {
         if let s@Self::Node{..} = self.clone() {
-            println!("rec top unwrap");
             if key == s.get_key().unwrap() {
-//                if *s.get_left().borrow() == Self::Nil && *s.get_right().borrow() == Self::Nil {
-                let tmp = node.clone();
+                let tmp = self.clone();
                 self.delete_node(tmp);
-                //} else if *s.get_left().borrow() == Self::Nil {
-                //    replace_target = Some(Rc::clone(&s.get_right()));
-                //} else if *s.get_right().borrow() == Self::Nil {
-                //    replace_target = Some(Rc::clone(&s.get_left()));
-                //} else {
-                //    let successor = s.get_successor();
-                //    let new_key = if let Self::Node{key: ref k, ..} = *successor.borrow() {
-                //        *k
-                //    } else {
-                //        given
-                //    };
-                //    Self::delete(successor, new_key);
-                //}
-            println!("rec else if unwrap");
             } else if key < s.get_key().unwrap() {
                 let l = s.get_left().clone();
                 l.borrow_mut().delete(key);
@@ -216,7 +187,7 @@ impl<T> BST<T> where T: Ord + Display + Copy + PartialEq {
     }
 
     fn delete_node(&mut self, mut node: Self) {
-        if let Self::Node{ref mut left, ref mut right, ..} = node {
+        if let Self::Node{ref mut left, ref mut right, ref key, ..} = node {
             match (&*left.borrow_mut(), &*right.borrow_mut()) {
                 (Self::Nil, Self::Nil) => {
                     *self = Self::Nil;
@@ -231,74 +202,38 @@ impl<T> BST<T> where T: Ord + Display + Copy + PartialEq {
                 },
                 (Self::Node{..}, mut r@Self::Node{..}) => {
                     let successor = r.get_successor();
-                    println!("node unwrap");
-                    let new_key = successor.borrow().get_key().unwrap();
-                    self.set_key(new_key);
+                    let new_key = successor.get_key().unwrap();
                     let mut r = r.clone();
                     r.delete(new_key);
+                    self.set_key(new_key);
                 }
             }
         }
     }
 
-    //TODO: successor is nil
-    fn get_successor(&self) -> Rc<RefCell<Self>> {
+    fn get_successor(&self) -> Self {
         match self {
             Self::Nil => {
-                Rc::new(RefCell::new(self.clone()))
+                unreachable!();
             },
-            Self::Node {parent, right, ..} => {
-                match *right.borrow() {
-                    Self::Node {ref key, ..} => {
-                        Self::get_minimum(right.clone())
-                    },
-                    Self::Nil => {
-                        let mut y = parent.clone();
-                        let mut x = Rc::new(RefCell::new(self.clone()));
-                        loop {
-                            match (&*y.borrow() , &*x.borrow()) {
-                                (Self::Node{left: ref yl, ..}, Self::Node{key: ref xk, ..}) => {
-                                    if let Self::Node{key: ref ylk, ..} = *yl.borrow() {
-                                        if *ylk == *xk {
-                                            break;
-                                        }
-                                    }
-                                },
-                                (Self::Nil, _) => {
-                                    break;
-                                },
-                                _ => {
-                                    ()
-                                }
-                            }
-                            x = y.clone();
-                            let yp = if let Self::Node{parent: ref ypr, ..} = *y.borrow() {
-                                ypr.clone()
-                            } else {
-                                Rc::new(RefCell::new(Self::Nil))
-                            };
-                            y = yp.clone();
-                        }
-                        y.clone()
-                    }
-
-                }
+            Self::Node {..} => {
+                self.get_minimum()
             }
         }
     }
 
-    fn get_minimum(node: Rc<RefCell<Self>>) -> Rc<RefCell<Self>> {
-        if let Self::Node {left, ..} = &*node.borrow() {
+    fn get_minimum(&self) -> Self {
+        if let Self::Node {left, ..} = self {
             match *left.borrow() {
                 Self::Node{..} => {
-                    Self::get_minimum(left.clone())
+                    Self::get_minimum(&left.borrow())
                 },
                 Self::Nil => {
-                    node.clone()
+                    self.clone()
                 }
             }
         } else {
-            Rc::new(RefCell::new(Self::Nil))
+            unreachable!();
         }
     }
 
