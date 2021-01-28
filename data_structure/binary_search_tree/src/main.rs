@@ -52,7 +52,6 @@ enum BST<T> where T: Ord + Display + Copy + PartialEq {
     Nil,
     Node {
         key: T,
-        parent: Rc<RefCell<BST<T>>>,
         left: Rc<RefCell<BST<T>>>,
         right: Rc<RefCell<BST<T>>>,
     },
@@ -68,7 +67,6 @@ impl<T> BST<T> where T: Ord + Display + Copy + PartialEq {
             Self::Nil => {
                 *self = Self::Node {
                     key: z,
-                    parent: Rc::new(RefCell::new(Self::Nil)),
                     left: Rc::new(RefCell::new(Self::Nil)),
                     right: Rc::new(RefCell::new(Self::Nil)),
                 }
@@ -155,11 +153,7 @@ impl<T> BST<T> where T: Ord + Display + Copy + PartialEq {
         }
     }
 
-    fn delete(&mut self, given: T) {
-        self.delete_rec(given);
-    }
-
-    fn delete_rec(&mut self, key: T) {
+    fn delete(&mut self, key: T) {
         if let s@Self::Node{..} = self.clone() {
             if key == s.get_key().unwrap() {
                 let tmp = self.clone();
@@ -180,9 +174,8 @@ impl<T> BST<T> where T: Ord + Display + Copy + PartialEq {
                 (Self::Nil, Self::Nil) => {
                     *self = Self::Nil;
                 },
-                (Self::Node{ref parent, ref left, ref right, ref key}, Self::Nil) | (Self::Nil, Self::Node{ref parent,ref  left,ref  right,ref  key}) => {
+                (Self::Node{ref left, ref right, ref key}, Self::Nil) | (Self::Nil, Self::Node{ref  left,ref  right,ref  key}) => {
                     *self = Self::Node {
-                        parent: parent.clone(),
                         left: left.clone(), 
                         right: right.clone(), 
                         key: *key
