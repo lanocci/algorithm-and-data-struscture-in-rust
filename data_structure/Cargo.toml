@@ -7,4 +7,5 @@ members = [
   "binary_tree",
   "tree_walk",
   "binary_search_tree",
+  "complete_binary_tree",
 ]
