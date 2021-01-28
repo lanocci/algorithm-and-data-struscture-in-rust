@@ -139,17 +139,6 @@ impl<T> BST<T> where T: Ord + Display + Copy + PartialEq {
         }
     }
 
-    fn get_parent(&self) -> Rc<RefCell<Self>> {
-        match self {
-            Self::Nil => {
-                Rc::new(RefCell::new(Self::Nil))
-            },
-            Self::Node{ref parent, ..}  => {
-                parent.clone()
-            }
-        }
-    }
-
     fn get_key(&self) -> Option<T> {
         match self {
             Self::Nil => {
@@ -167,11 +156,10 @@ impl<T> BST<T> where T: Ord + Display + Copy + PartialEq {
     }
 
     fn delete(&mut self, given: T) {
-        let n = self.clone();
-        self.delete_rec(n, given);
+        self.delete_rec(given);
     }
 
-    fn delete_rec(&mut self, node: Self, key: T) {
+    fn delete_rec(&mut self, key: T) {
         if let s@Self::Node{..} = self.clone() {
             if key == s.get_key().unwrap() {
                 let tmp = self.clone();
@@ -187,7 +175,7 @@ impl<T> BST<T> where T: Ord + Display + Copy + PartialEq {
     }
 
     fn delete_node(&mut self, mut node: Self) {
-        if let Self::Node{ref mut left, ref mut right, ref key, ..} = node {
+        if let Self::Node{ref mut left, ref mut right, ..} = node {
             match (&*left.borrow_mut(), &*right.borrow_mut()) {
                 (Self::Nil, Self::Nil) => {
                     *self = Self::Nil;
@@ -200,11 +188,12 @@ impl<T> BST<T> where T: Ord + Display + Copy + PartialEq {
                         key: *key
                     };
                 },
-                (Self::Node{..}, mut r@Self::Node{..}) => {
+                (Self::Node{..}, r@Self::Node{..}) => {
                     let successor = r.get_successor();
                     let new_key = successor.get_key().unwrap();
                     let mut r = r.clone();
                     r.delete(new_key);
+                    self.set_right(Rc::new(RefCell::new(r)));
                     self.set_key(new_key);
                 }
             }
