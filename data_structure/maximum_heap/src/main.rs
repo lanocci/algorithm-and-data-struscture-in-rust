@@ -1,5 +1,5 @@
 use std::io::*;
-use util::Scanner;
+use util::{Scanner, Joinable};
 use complete_binary_tree::CompleteBinaryTree;
 
 fn main() {
@@ -20,6 +20,10 @@ fn solve() {
 
     let nodes: Vec<i32> = sc.vec(h);
 
-    let tree: CompleteBinaryTree<i32> = CompleteBinaryTree::new(nodes);
+    let mut tree: CompleteBinaryTree<i32> = CompleteBinaryTree::new(nodes);
+
+    tree.build_max_heap();
+
+    println!("{}", tree.nodes.iter().join(" "));
 
 }
