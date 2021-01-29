@@ -8,4 +8,6 @@ members = [
   "tree_walk",
   "binary_search_tree",
   "complete_binary_tree",
+  "complete_binary_tree_printing",
+  "maximum_heap",
 ]
