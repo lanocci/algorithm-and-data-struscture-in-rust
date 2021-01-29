@@ -1,0 +1,9 @@
+[package]
+name = "complete_binary_tree_printing"
+version = "0.1.0"
+authors = ["lanocci <16540010+lanocci@users.noreply.github.com>"]
+edition = "2018"
+
+[dependencies]
+util = { path = "../../util" }
+complete_binary_tree = { path = "../complete_binary_tree" }
