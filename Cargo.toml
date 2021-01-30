@@ -10,6 +10,7 @@ members = [
   "data_structure/complete_binary_tree_printing",
   "data_structure/complete_binary_tree",
   "data_structure/maximum_heap",
+  "data_structure/priority_queue",
   "sorts/bubble_sort",
   "sorts/insertion_sort",
   "sorts/judge_stable",

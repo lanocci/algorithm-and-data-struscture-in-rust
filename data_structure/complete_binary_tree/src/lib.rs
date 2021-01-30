@@ -18,6 +18,10 @@ impl<T> CompleteBinaryTree<T> where T: Copy + Ord + Display {
         (i + 1) * 2
     }
 
+    fn parent_idx(i: usize) -> usize {
+        (i + 1) / 2 - 1
+    }
+
     pub fn get<'a>(&'a self, i: usize) -> Option<&'a T> {
         self.nodes.get(i)
     }
@@ -33,15 +37,13 @@ impl<T> CompleteBinaryTree<T> where T: Copy + Ord + Display {
     }
 
     pub fn parent<'a>(&'a self, i: usize) -> Option<&'a T> {
-        let p_idx = (i + 1) / 2 - 1;
+        let p_idx = Self::parent_idx(i);
         self.nodes.get(p_idx)
     }
 
     fn max_heapify(&mut self, idx: usize) {
         let mut lg_idx = match (self.get(idx), self.left(idx)) {
             (Some(s), Some(l)) => {
-                println!("comparing self and left");
-                println!("self: {}, left: {}", s, l);
                 if l > s {
                     Self::left_idx(idx)
                 } else {
@@ -57,8 +59,6 @@ impl<T> CompleteBinaryTree<T> where T: Copy + Ord + Display {
         };
         lg_idx = match (self.get(lg_idx), self.right(idx)) {
             (Some(lg), Some(r)) => {
-                println!("comparing to right");
-                println!("lg: {}, right: {}", lg, r);
                 if r > lg {
                     Self::right_idx(idx)
                 } else {
@@ -71,7 +71,6 @@ impl<T> CompleteBinaryTree<T> where T: Copy + Ord + Display {
             _ => unreachable!()
         };
         if lg_idx != idx {
-            println!("swapped!");
             self.nodes.swap(lg_idx, idx);
             self.max_heapify(lg_idx);
         }
@@ -82,6 +81,34 @@ impl<T> CompleteBinaryTree<T> where T: Copy + Ord + Display {
         for i in (0..h).rev() {
             self.max_heapify(i);
         }
+    }
+
+    pub fn insert(&mut self, key: T) {
+        self.nodes.push(key);
+        let mut i = self.nodes.len() - 1;
+        if i < 1 { return; }
+        while let (Some(p), Some(s)) = (self.parent(i), self.get(i)) {
+            if i < 1 && s < p {
+                break;
+            }
+            if p < s {
+                self.nodes.swap(i, Self::parent_idx(i));
+            }
+            i = Self::parent_idx(i);
+            if i < 1 { return; }
+        }
+    }
+
+    pub fn extract(&mut self) -> T {
+        let h = self.nodes.len();
+        if h < 1 { panic!("tree is empty") }
+        let max = self.nodes[0];
+        let last = self.nodes.pop();
+        if self.nodes.len() > 0 {
+            self.nodes[0] = last.unwrap();
+            self.max_heapify(0);
+        }
+        max
     }
 
 }
