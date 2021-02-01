@@ -3,4 +3,5 @@ members = [
   "devide_and_concur_search",
   "koch_curve",
   "fibonacci",
+  "lcs",
 ]

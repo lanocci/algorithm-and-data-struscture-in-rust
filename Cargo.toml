@@ -24,6 +24,8 @@ members = [
   "search/hash",
   "strategy/devide_and_concur_search",
   "strategy/koch_curve",
+  "strategy/fibonacci",
+  "strategy/lcs",
   "util",
 ]
 exclude = ["data_structure", "sorts", "search", "strategy"]
