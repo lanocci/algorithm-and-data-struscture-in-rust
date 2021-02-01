@@ -4,4 +4,5 @@ members = [
   "koch_curve",
   "fibonacci",
   "lcs",
+  "matrix_chain_multiplication",
 ]

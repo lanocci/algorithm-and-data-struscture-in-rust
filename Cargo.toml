@@ -26,6 +26,7 @@ members = [
   "strategy/koch_curve",
   "strategy/fibonacci",
   "strategy/lcs",
+  "strategy/matrix_chain_multiplication",
   "util",
 ]
 exclude = ["data_structure", "sorts", "search", "strategy"]
