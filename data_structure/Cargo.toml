@@ -11,4 +11,5 @@ members = [
   "complete_binary_tree_printing",
   "maximum_heap",
   "priority_queue",
+  "graph",
 ]
