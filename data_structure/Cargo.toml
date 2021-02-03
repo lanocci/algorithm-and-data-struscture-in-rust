@@ -12,4 +12,5 @@ members = [
   "maximum_heap",
   "priority_queue",
   "graph",
+  "graph_dfs",
 ]

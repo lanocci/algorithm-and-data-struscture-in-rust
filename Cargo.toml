@@ -12,6 +12,7 @@ members = [
   "data_structure/maximum_heap",
   "data_structure/priority_queue",
   "data_structure/graph",
+  "data_structure/graph_dfs",
   "sorts/bubble_sort",
   "sorts/insertion_sort",
   "sorts/judge_stable",
