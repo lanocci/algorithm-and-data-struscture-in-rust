@@ -39,7 +39,7 @@ fn solve() {
 
 #[derive(Clone, PartialEq)]
 enum Status {
-    Done,
+    Visited,
     Remaining,
 }
 
@@ -51,9 +51,9 @@ fn bfs(matrix: &Vec<Vec<bool>>, distances: &mut Vec<usize>, statuses: &mut Vec<S
         for i in 0..matrix.len() {
             if matrix[u][i] && statuses[i] == Status::Remaining {
                 q.push_back(i);
+                statuses[i] = Status::Visited;
                 distances[i] = distances[u] + 1;
             }
         }
-        statuses[u] = Status::Done;
     }
 }
