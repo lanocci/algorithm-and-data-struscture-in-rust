@@ -13,4 +13,5 @@ members = [
   "priority_queue",
   "graph",
   "graph_dfs",
+  "graph_bfs",
 ]
