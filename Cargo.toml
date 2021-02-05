@@ -14,6 +14,7 @@ members = [
   "data_structure/graph",
   "data_structure/graph_dfs",
   "data_structure/graph_bfs",
+  "data_structure/graph_connected_components",
   "sorts/bubble_sort",
   "sorts/insertion_sort",
   "sorts/judge_stable",

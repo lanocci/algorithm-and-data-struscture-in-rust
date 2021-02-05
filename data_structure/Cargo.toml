@@ -14,4 +14,5 @@ members = [
   "graph",
   "graph_dfs",
   "graph_bfs",
+  "graph_connected_components",
 ]
