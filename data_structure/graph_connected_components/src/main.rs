@@ -35,12 +35,27 @@ fn solve() {
         let s: usize = sc.read();
         let t: usize = sc.read();
 
-        let mut ans = false;
-        for &x in adj_list[s].iter() {
-            if x == t {
-                ans = true;
-            }
-        }
+        let mut statuses = vec![Status::Remaining; n];
+        let ans = dfs(&adj_list, s, t, &mut statuses);
+
         println!("{}", if ans { "yes" } else { "no" });
     }
+}
+
+#[derive(Clone, PartialEq)]
+enum Status {
+    Remaining,
+    Visited,
+}
+
+fn dfs(adj_list: &Vec<VecDeque<usize>>, s: usize, t: usize, statuses: &mut Vec<Status>) -> bool {
+    for &x in adj_list[s].iter() {
+        if x == t {
+            return true
+        } else if statuses[x] == Status::Remaining {
+            statuses[s] = Status::Visited;
+            return dfs(adj_list, x, t, statuses)
+        }
+    }
+    false
 }
