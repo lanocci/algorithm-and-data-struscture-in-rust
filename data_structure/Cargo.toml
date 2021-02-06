@@ -15,4 +15,6 @@ members = [
   "graph_dfs",
   "graph_bfs",
   "graph_connected_components",
+  "minimum_spanning_tree",
+  "single_source_shortest_path",
 ]

@@ -1,0 +1,8 @@
+[package]
+name = "minimum_spanning_tree"
+version = "0.1.0"
+authors = ["lanocci <16540010+lanocci@users.noreply.github.com>"]
+edition = "2018"
+
+[dependencies]
+util = { path = "../../util" }
