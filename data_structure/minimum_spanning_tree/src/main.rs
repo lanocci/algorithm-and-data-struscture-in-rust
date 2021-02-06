@@ -27,35 +27,36 @@ fn solve() {
     let mut p: Vec<usize> = vec![n; n];
     let mut d: Vec<i32> = vec![std::i32::MAX; n];
     d[0] = 0;
-    let mut idx: usize = 0;
 
-    while let Some(_) = t.iter().find(|x| x == Status::Black) {
-        let min_v = std::i32::MAX;
-        let u = -1;
+    loop {
+        let mut min_v = std::i32::MAX;
+        let mut u = n;
         for i in 0..n {
-            if 0 <= matrix[idx][i] && matrix[idx][i] <= min_v && t[i] != Status::Black {
-                min_v = matrix[idx][i];
+            if d[i] < min_v && t[i] != Status::Black {
+                min_v = d[i];
                 u = i;
             }
         }
+        if min_v == std::i32::MAX { break; }
 
-        if distance == std::i32::MAX {
+        t[u] = Status::Black;
 
-        } else {
-            idx = min_i;
-            distance += min_v;
-            p[min_i] = idx;
-            t[]
+        for v in 0..n {
+            if t[v] != Status::Black && matrix[u][v] != -1 {
+                if matrix[u][v] < d[v] {
+                    d[v] = matrix[u][v];
+                    p[v] = u;
+                }
+            }
         }
     }
 
-    println!("{}", distance);
+    println!("{}", d.iter().fold(0, |sum, x| sum + x));
 
 }
 
 #[derive(Clone, PartialEq)]
 enum Status {
     White,
-    Grey,
     Black,
 }
