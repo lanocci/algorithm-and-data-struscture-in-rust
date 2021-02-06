@@ -23,18 +23,39 @@ fn solve() {
         matrix[i] = sc.vec(n);
     }
 
-    let mut t = vec![false; n];
+    let mut t = vec![Status::White; n];
+    let mut p: Vec<usize> = vec![n; n];
+    let mut d: Vec<i32> = vec![std::i32::MAX; n];
+    d[0] = 0;
     let mut idx: usize = 0;
 
-    while if let Some(_) = t.iter().find(|x| !x) {
-        t[idx] = true;
+    while let Some(_) = t.iter().find(|x| x == Status::Black) {
         let min_v = std::i32::MAX;
-        let min_i = 0;
+        let u = -1;
         for i in 0..n {
-            if 0 <= matrix[idx][i] && matrix[idx][i] <= min_v && !t[i] {
-                min_v = cmp::min(min_v, matrix[idx][i]);
+            if 0 <= matrix[idx][i] && matrix[idx][i] <= min_v && t[i] != Status::Black {
+                min_v = matrix[idx][i];
+                u = i;
             }
+        }
+
+        if distance == std::i32::MAX {
+
+        } else {
+            idx = min_i;
+            distance += min_v;
+            p[min_i] = idx;
+            t[]
         }
     }
 
+    println!("{}", distance);
+
+}
+
+#[derive(Clone, PartialEq)]
+enum Status {
+    White,
+    Grey,
+    Black,
 }
