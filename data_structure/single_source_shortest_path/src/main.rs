@@ -96,6 +96,10 @@ fn dijkstra_naive(matrix: & Vec<Vec<usize>>, s: usize) -> Vec<usize> {
 
 /// ### More Sophisticated Implementation of Dijkstra's Algorithm (Using Priority Queue)
 /// 
+/// - `O((|V| + |E|) log||V|)
+///     - log|V| for each pop from priority heap * |V| times
+///     - log|V| for each push to priority heap * |E| times
+/// 
 /// 1. Initialize parameters
 ///   - `S`: empty set
 ///   - `d[s]`: 0
