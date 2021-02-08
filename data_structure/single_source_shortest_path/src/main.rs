@@ -114,7 +114,6 @@ fn dijkstra_naive(adjs: & Vec<Vec<Node>>, s: usize) -> Vec<usize> {
 ///       - update heap `H` starts from `v`
 fn dijkstra_soph(adjs: & Vec<Vec<Node>>, s: usize) -> Vec<usize> {
     let n = adjs.len();
-    let mut statuses = vec![Status::White; n];
     let mut d = vec![usize::MAX; n];
     d[s] = 0;
     let mut p = vec![usize::MAX; n];
@@ -122,28 +121,16 @@ fn dijkstra_soph(adjs: & Vec<Vec<Node>>, s: usize) -> Vec<usize> {
     let mut h: BinaryHeap<Node> = BinaryHeap::new();
     h.push(Node{id: s, cost: 0});
 
-
     while !h.is_empty() {
-        let mut min_d = usize::MAX;
-        let mut u = n;
-        u = h.pop().unwrap().id;
-        for i in 0..n {
-            if d[i] < min_d && statuses[i] != Status::Black {
-                min_d = d[i];
-                u = i;
-            }
-        }
+        let u = h.pop().unwrap().id;
 
-        if min_d == usize::MAX { break; }
-        statuses[u] = Status::Black;
+        if d[u] == usize::MAX { continue; }
 
         for node in adjs[u].iter() {
-            if statuses[node.id] != Status::Black {
-                if d[u] + node.cost < d[node.id] {
-                    d[node.id] = d[u] + node.cost;
-                    p[node.id] = u;
-                    h.push(node.clone());
-                }
+            if d[u] + node.cost < d[node.id] {
+                d[node.id] = d[u] + node.cost;
+                p[node.id] = u;
+                h.push(node.clone());
             }
         }
     }

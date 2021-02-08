@@ -17,4 +17,5 @@ members = [
   "graph_connected_components",
   "minimum_spanning_tree",
   "single_source_shortest_path",
+  "disjoint_set",
 ]
