@@ -5,7 +5,7 @@ use util::Scanner;
 
 fn main() {
     std::thread::Builder::new()
-        .stack_size(1048576)
+        .stack_size(104857600)
         .spawn(solve)
         .unwrap()
         .join()
@@ -19,7 +19,7 @@ fn solve() {
 
     let n: usize = sc.read();
 
-    let mut matrix: Vec<Vec<usize>> = vec![vec![usize::MAX; n]; n];
+    let mut adjs: Vec<Vec<Node>> = vec![Vec::new(); n];
     
     for _ in 0..n {
         let idx: usize = sc.read();
@@ -27,14 +27,14 @@ fn solve() {
         for _ in 0..k {
             let v: usize = sc.read();
             let c: usize = sc.read();
-            matrix[idx][v] = c;
+            adjs[idx].push(Node{id: v, cost: c});
         }
     }
 
-    let d = dijkstra_soph(&matrix, 0);
+    let d = dijkstra_soph(&adjs, 0);
 
-    for i in 0..n {
-        println!("{} {}", i + 1, d[i]);
+    for (i, v) in d.iter().enumerate() {
+        println!("{} {}", i, v);
     }
 }
 
@@ -60,8 +60,8 @@ enum Status {
 ///     - if `d[u] + w(u, v)` (weight between u and v) < `d[v]`
 ///       - assign `d[u] + w(u, v)` to `d[v]`
 ///       - assign `u` to `p[v]`
-fn dijkstra_naive(matrix: & Vec<Vec<usize>>, s: usize) -> Vec<usize> {
-    let n = matrix.len();
+fn dijkstra_naive(adjs: & Vec<Vec<Node>>, s: usize) -> Vec<usize> {
+    let n = adjs.len();
     let mut statuses = vec![Status::White; n];
     let mut d = vec![usize::MAX; n];
     d[s] = 0;
@@ -81,11 +81,11 @@ fn dijkstra_naive(matrix: & Vec<Vec<usize>>, s: usize) -> Vec<usize> {
 
         statuses[u] = Status::Black;
 
-        for v in 0..n {
-            if statuses[v] != Status::Black && matrix[u][v] != usize::MAX {
-                if d[u] + matrix[u][v] < d[v] {
-                    d[v] = d[u] + matrix[u][v];
-                    p[v] = u;
+        for node in adjs[u].iter() {
+            if statuses[node.id] != Status::Black {
+                if d[u] + node.cost < d[node.id] {
+                    d[node.id] = d[u] + node.cost;
+                    p[node.id] = u;
                 }
             }
         }
@@ -112,8 +112,8 @@ fn dijkstra_naive(matrix: & Vec<Vec<usize>>, s: usize) -> Vec<usize> {
 ///       - assign `d[u] + w(u, v)` to `d[v]`
 ///       - assign `v` to `p[v]`
 ///       - update heap `H` starts from `v`
-fn dijkstra_soph(matrix: & Vec<Vec<usize>>, s: usize) -> Vec<usize> {
-    let n = matrix.len();
+fn dijkstra_soph(adjs: & Vec<Vec<Node>>, s: usize) -> Vec<usize> {
+    let n = adjs.len();
     let mut statuses = vec![Status::White; n];
     let mut d = vec![usize::MAX; n];
     d[s] = 0;
@@ -137,12 +137,12 @@ fn dijkstra_soph(matrix: & Vec<Vec<usize>>, s: usize) -> Vec<usize> {
         if min_d == usize::MAX { break; }
         statuses[u] = Status::Black;
 
-        for v in 0..n {
-            if statuses[v] != Status::Black && matrix[u][v] != usize::MAX {
-                if d[u] + matrix[u][v] < d[v] {
-                    d[v] = d[u] + matrix[u][v];
-                    p[v] = u;
-                    h.push(Node{id: v, cost: d[v]});
+        for node in adjs[u].iter() {
+            if statuses[node.id] != Status::Black {
+                if d[u] + node.cost < d[node.id] {
+                    d[node.id] = d[u] + node.cost;
+                    p[node.id] = u;
+                    h.push(node.clone());
                 }
             }
         }
@@ -150,10 +150,10 @@ fn dijkstra_soph(matrix: & Vec<Vec<usize>>, s: usize) -> Vec<usize> {
     d
 }
 
-#[derive(Eq)]
+#[derive(Eq, Clone)]
 struct Node {
     pub id: usize,
-    cost: usize,
+    pub cost: usize,
 }
 
 impl PartialOrd for Node {
