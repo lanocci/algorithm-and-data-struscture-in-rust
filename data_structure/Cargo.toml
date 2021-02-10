@@ -18,4 +18,5 @@ members = [
   "minimum_spanning_tree",
   "single_source_shortest_path",
   "disjoint_set",
+  "kd_tree",
 ]
