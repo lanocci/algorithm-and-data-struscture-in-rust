@@ -49,10 +49,14 @@ struct Point {
     y: usize,
 }
 
+/// A node in bidimensional tree
 #[derive(Clone)]
 struct Node {
+    /// location of the node in the tree (inorder traversal order)
     pub location: usize,
+    /// the index of left child node
     pub left: Option<usize>,
+    /// the index of right child node
     pub right: Option<usize>,
 }
 
@@ -72,7 +76,21 @@ impl BidimensionalTree {
         bt
     }
 
-    fn make_nodes(&mut self, l: usize, r: usize, depth: usize) -> Option<usize> {
+    /// create nodes of bidimentional tree from given set of points
+    /// in each recursive call, it will
+    ///     - sort vector of points in the target range (between `l` and `r` indices)
+    ///         - the sort will be performed in terms of x if depth is even number, and interms of y otherwise.
+    ///         - the purpose of this operation is to match location of the node to create and the index of the point to relate to the node
+    ///     - create a node that hold;
+    ///         - location: index of the related point
+    ///         - left: the index of the left child node
+    ///         - right: the index of the right child node
+    /// the index in the vector of nodes represents the order in preorder traversal. it means the index 0 is the root node.
+    /// parameters: 
+    ///     l: smallest index in the set of target points
+    ///     r: largest index in the set of target points
+    ///     depth: current depth in the bidimensional tree 
+    fn make_nodes( &mut self, l: usize, r: usize, depth: usize) -> Option<usize> {
         if !(l < r) { return None; }
         let mid  = (l + r) / 2;
         if depth % 2 == 0 {
@@ -93,6 +111,16 @@ impl BidimensionalTree {
         ans
     }
 
+    /// find set of points in the range of points given
+    /// recursively search for nodes that fullfill the condition
+    /// in each recursive call;
+    ///     - check if x and y coordinate is in the range. if so, add the point to the answer vector
+    ///     - if the depth is even number:
+    ///         - check if the x coordinate of the point related to the current node is greater than lower limit of x.
+    ///         - if so, recursively find on left child
+    ///         - check if the x coordinate of the point related to the current node is smaller than greater limit of x.
+    ///         - if so, recursively find on right child
+    ///     - otherwise, check on the y coordinate likewise
     fn find_rec(&mut self, v: usize, sx: usize, tx: usize, sy: usize, ty: usize, depth: usize, ans: &mut Vec<Point>) {
         let x = self.points[self.nodes[v].location].x;
         let y = self.points[self.nodes[v].location].y;
