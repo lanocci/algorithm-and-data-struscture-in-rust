@@ -106,7 +106,7 @@ fn dijkstra_naive(adjs: & Vec<Vec<Node>>, s: usize) -> Vec<usize> {
 ///   - For all `i`, except when `i = s`, `d[u] = inf.`
 ///   - Construct min-heap `H` with `d[u]` as keys
 /// 2. Repeat following calculations until `S = V`
-///   - Extract vertex `u` where `d[u]` is the minimum (and mark `Black`)
+///   - Extract vertex `u` where `d[u]` is the minimum
 ///   - Add `u` to the set `S`, and update all vertices which are next to u and belong to `V - S` with following calculation: 
 ///     - if `d[u] + w(u, v)` (weight between u and v) < `d[v]`
 ///       - assign `d[u] + w(u, v)` to `d[v]`

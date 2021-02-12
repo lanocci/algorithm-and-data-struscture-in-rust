@@ -17,6 +17,7 @@ members = [
   "data_structure/graph_connected_components",
   "data_structure/minimum_spanning_tree",
   "data_structure/single_source_shortest_path",
+  "data_structure/all_pairs_shortest_path",
   "data_structure/disjoint_set",
   "data_structure/kd_tree",
   "sorts/bubble_sort",
