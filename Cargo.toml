@@ -28,6 +28,7 @@ members = [
   "sorts/partition",
   "sorts/quick_sort",
   "sorts/counting_sort",
+  "sorts/topological_sort",
   "search/linear_search",
   "search/binary_search",
   "search/hash",

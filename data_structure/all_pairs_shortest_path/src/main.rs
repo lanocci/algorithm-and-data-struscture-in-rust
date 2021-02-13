@@ -42,13 +42,14 @@ fn solve() {
         println!("NEGATIVE CYCLE");
     } else {
         for d in mf.0.iter() {
-            for &w in d.iter() {
+            for (i, &w) in d.iter().enumerate() {
+                if i > 0 { println!(" ");}
                 let s = if w == i32::MAX {
                     String::from("INF")
                 } else {
                     w.to_string()
                 };
-                print!("{} ", s);
+                print!("{}", s);
             }
             println!("");
         }

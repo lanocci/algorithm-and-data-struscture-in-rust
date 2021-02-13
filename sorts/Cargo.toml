@@ -9,4 +9,5 @@ members = [
   "partition",
   "quick_sort",
   "counting_sort",
+  "topological_sort",
 ]
