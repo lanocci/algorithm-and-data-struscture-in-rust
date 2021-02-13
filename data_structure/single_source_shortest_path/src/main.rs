@@ -106,12 +106,12 @@ fn dijkstra_naive(adjs: & Vec<Vec<Node>>, s: usize) -> Vec<usize> {
 ///   - For all `i`, except when `i = s`, `d[u] = inf.`
 ///   - Construct min-heap `H` with `d[u]` as keys
 /// 2. Repeat following calculations until `S = V`
-///   - Extract vertex `u` where `d[u]` is the minimum
+///   - Extract vertex `u` where `d[u]` is the minimum (by popping from min-heap)
 ///   - Add `u` to the set `S`, and update all vertices which are next to u and belong to `V - S` with following calculation: 
 ///     - if `d[u] + w(u, v)` (weight between u and v) < `d[v]`
 ///       - assign `d[u] + w(u, v)` to `d[v]`
 ///       - assign `v` to `p[v]`
-///       - update heap `H` starts from `v`
+///       - push v to the min-heap `H`
 fn dijkstra_soph(adjs: & Vec<Vec<Node>>, s: usize) -> Vec<usize> {
     let n = adjs.len();
     let mut d = vec![usize::MAX; n];
