@@ -20,6 +20,7 @@ members = [
   "data_structure/all_pairs_shortest_path",
   "data_structure/disjoint_set",
   "data_structure/kd_tree",
+  "data_structure/diameter_of_a_tree",
   "sorts/bubble_sort",
   "sorts/insertion_sort",
   "sorts/judge_stable",

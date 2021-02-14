@@ -20,4 +20,5 @@ members = [
   "all_pairs_shortest_path",
   "disjoint_set",
   "kd_tree",
+  "diameter_of_a_tree",
 ]
