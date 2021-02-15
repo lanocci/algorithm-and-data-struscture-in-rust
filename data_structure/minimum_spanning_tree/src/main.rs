@@ -1,11 +1,12 @@
 use std::io::*;
 use util::Scanner;
+use core::cmp::Ordering;
 use disjoint_set::DisjointSet;
 
 fn main() {
     std::thread::Builder::new()
         .stack_size(1048576)
-        .spawn(solve_with_naive_prim)
+        .spawn(solve_with_kruskal)
         .unwrap()
         .join()
         .unwrap();
@@ -65,4 +66,70 @@ fn naive_prim(matrix: &Vec<Vec<i32>>) -> Vec<i32> {
 enum Status {
     New,
     Active,
+}
+
+fn solve_with_kruskal() {
+    let cin = stdin();
+    let cin = cin.lock();
+    let mut sc = Scanner::new(cin);
+
+    let v: usize = sc.read();
+    let e: usize = sc.read();
+
+    let mut adjs: Vec<Edge> = Vec::new();
+
+    for _ in 0..e {
+        let s: usize = sc.read();
+        let t: usize = sc.read();
+        let w: usize = sc.read();
+        adjs.push(Edge{from: s, to: t, weight: w});
+    }
+    let total = kruskal(&mut adjs);
+    println!("{}", total);
+}
+
+fn kruskal(adjs: &mut Vec<Edge>) -> usize {
+    let mut total = 0;
+    let n = adjs.len();
+    let mut dset = DisjointSet::new(n + 1);
+    adjs.sort();
+
+    for e in adjs.iter() {
+        if !dset.same(e.from, e.to) {
+            total += e.weight;
+            dset.unite(e.from, e.to);
+        }
+    }
+    total
+}
+
+#[derive(Clone, Eq)]
+struct Edge {
+    from: usize,
+    to: usize,
+    weight: usize,
+}
+
+impl PartialOrd for Edge {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for Edge {
+    fn cmp(&self, other: &Self) -> Ordering {
+        if self.weight > other.weight {
+            Ordering::Greater
+        } else if self.weight < other.weight {
+            Ordering::Less
+        } else {
+            Ordering::Equal
+        }
+    }
+}
+
+impl PartialEq for Edge {
+    fn eq(&self, other: &Self) -> bool {
+        self.weight == other.weight
+    }
 }
