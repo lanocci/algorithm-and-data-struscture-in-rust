@@ -6,3 +6,4 @@ edition = "2018"
 
 [dependencies]
 util = { path = "../../util" }
+disjoint_set = { path = "../disjoint_set" }
