@@ -88,10 +88,19 @@ fn solve_with_kruskal() {
     println!("{}", total);
 }
 
+/// ## implementation of Kruskal's algorithm using disjoint set
+/// 
+/// 1. sort the set of the edges in ascending order of weight
+///     - To make sure the edges added to the result tree first has the smallest weight of the remaining.
+/// 2. initialize a set of edges in the minimum spanning tree with empty
+/// 3. until `|K| = |V| - 1`, add edge `e<i>` (i = 1, 2, ..., |E|) to K. But only if `e<i>` doesn't make cycle.
+///     - Disjoint set is useful when judging if the edge makes cycle or not
+///     - If the edge's origin and distination node is already in a same disjoint set, that means it makes cycle, do nothing.
+///     - If not, unite disjoint sets of origin and distination node, and add the edge to `|K|`.
 fn kruskal(adjs: &mut Vec<Edge>) -> usize {
     let mut total = 0;
     let n = adjs.len();
-    let mut dset = DisjointSet::new(n + 1);
+    let mut dset = DisjointSet::new(n);
     adjs.sort();
 
     for e in adjs.iter() {
