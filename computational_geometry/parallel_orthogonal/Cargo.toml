@@ -1,5 +1,5 @@
 [package]
-name = "paralelel_orthogonal"
+name = "parallel_orthogonal"
 version = "0.1.0"
 authors = ["lanocci <16540010+lanocci@users.noreply.github.com>"]
 edition = "2018"

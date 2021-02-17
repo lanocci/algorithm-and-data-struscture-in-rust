@@ -1,5 +1,7 @@
 [workspace]
 members = [
+  "computational_geometry/parallel_orthogonal",
+  "computational_geometry/point",
   "data_structure/queue",
   "data_structure/stack",
   "data_structure/doubly_linked_list",
@@ -41,4 +43,4 @@ members = [
   "strategy/matrix_chain_multiplication",
   "util",
 ]
-exclude = ["data_structure", "sorts", "search", "strategy"]
+exclude = ["computational_geometry", "data_structure", "sorts", "search", "strategy"]

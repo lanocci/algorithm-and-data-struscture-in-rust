@@ -72,3 +72,18 @@ impl ops::Mul for Point {
   }
 }
 ```
+
+### ベクトルの大きさ
+
+- ベクトル `a = (a<x>, a<y>)` の大きさ `|a|` は原点からベクトルを表す点までの距離
+- ベクトルの大きさの2乗を表す関数 `norm` は以下のように定義できる
+
+```
+fn norm(a: Vector) -> f32 {
+  a.x * a.x + a.y * a.y
+}
+
+fn abs(a: Vector) -> f32 {
+  norm(a).sqrt()
+}
+```
