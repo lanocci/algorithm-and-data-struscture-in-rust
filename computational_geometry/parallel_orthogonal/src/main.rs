@@ -35,6 +35,8 @@ fn solve() {
         let s2 = Segment::new(p2, p3);
         if s1.is_orthogonal(&s2) {
             println!("1");
+        } else if s1.is_parallel(&s2) {
+            println!("2");
         } else {
             println!("0");
         }

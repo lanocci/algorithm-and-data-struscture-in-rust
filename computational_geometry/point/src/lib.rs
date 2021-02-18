@@ -106,6 +106,10 @@ impl<T> Point<T> where T: Float + Zero {
     pub fn is_orthogonal(&self, other: &Self) -> bool {
         self.dot_product(other).is_zero()
     }
+
+    pub fn is_parallel(&self, other: &Self) -> bool {
+        self.cross_product(other).is_zero()
+    }
 }
 
 type Vector<T> = Point<T>;
@@ -124,6 +128,12 @@ impl<T> Segment<T> where T: Float + Zero {
         let vec1 = self.p2.clone() - self.p1.clone();
         let vec2 = other.p2.clone() - other.p1.clone();
         vec1.is_orthogonal(&vec2)
+    }
+
+    pub fn is_parallel(&self, other: &Self) -> bool {
+        let vec1 = self.p2.clone() - self.p1.clone();
+        let vec2 = other.p2.clone() - other.p1.clone();
+        vec1.is_parallel(&vec2)
     }
 }
 
