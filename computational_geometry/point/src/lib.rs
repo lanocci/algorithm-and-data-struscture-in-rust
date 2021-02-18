@@ -1,9 +1,9 @@
 use std::ops;
 use std::cmp::*;
-use num_traits::Float;
+use num_traits::{Float, Zero};
 
-#[derive(Eq)]
-struct Point<T> where T: Float {
+#[derive(Eq, Clone)]
+pub struct Point<T> where T: Float {
     x: T,
     y: T,
 }
@@ -82,25 +82,50 @@ impl<T> Ord for Point<T> where T: Float + Eq {
     }
 }
 
-impl<T> Point<T> where T: Float {
-    fn norm(self) -> T {
+impl<T> Point<T> where T: Float + Zero {
+    pub fn new(x: T, y: T) -> Self {
+        Point {x, y}
+    }
+
+    pub fn norm(self) -> T {
         self.x * self.x + self.y * self.y
     }
 
-    fn abs(self) -> T {
+    pub fn abs(self) -> T {
         self.norm().sqrt()
     }
 
-    fn dot_product(&self, other: &Self) -> T {
+    pub fn dot_product(&self, other: &Self) -> T {
         self.x * other.x + self.y * other.y
     }
 
-    fn cross_product(&self, other: &Self) -> T {
+    pub fn cross_product(&self, other: &Self) -> T {
         self.x * other.y + self.y * other.x
+    }
+
+    pub fn is_orthogonal(&self, other: &Self) -> bool {
+        self.dot_product(other).is_zero()
     }
 }
 
 type Vector<T> = Point<T>;
+
+pub struct Segment<T> where T: Float + Zero {
+    p1: Point<T>,
+    p2: Point<T>,
+}
+
+impl<T> Segment<T> where T: Float + Zero {
+    pub fn new(p1: Point<T>, p2: Point<T>) -> Self {
+        Segment {p1, p2}
+    }
+
+    pub fn is_orthogonal(&self, other: &Self) -> bool {
+        let vec1 = self.p2.clone() - self.p1.clone();
+        let vec2 = other.p2.clone() - other.p1.clone();
+        vec1.is_orthogonal(&vec2)
+    }
+}
 
 #[cfg(test)]
 mod tests {
