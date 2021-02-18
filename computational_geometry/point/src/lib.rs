@@ -4,8 +4,8 @@ use num_traits::{Float, Zero};
 
 #[derive(Eq, Clone)]
 pub struct Point<T> where T: Float {
-    x: T,
-    y: T,
+    pub x: T,
+    pub y: T,
 }
 
 impl<T> ops::Add for Point<T> where T: Float  {
@@ -30,24 +30,24 @@ impl<T> ops::Sub for Point<T> where T: Float {
     }
 }
 
-impl<T> ops::Mul for Point<T> where T: Float {
+impl<T> ops::Mul<T> for Point<T> where T: Float {
     type Output = Self;
 
-    fn mul(self, rhs: Self) -> Self::Output {
+    fn mul(self, rhs: T) -> Self::Output {
         Self {
-            x: self.x * rhs.x,
-            y: self.y * rhs.y,
+            x: self.x * rhs,
+            y: self.y * rhs,
         }
     }
 }
 
-impl<T> ops::Div for Point<T> where T: Float {
+impl<T> ops::Div<T> for Point<T> where T: Float {
     type Output = Self;
 
-    fn div(self, rhs: Self) -> Self::Output {
+    fn div(self, rhs: T) -> Self::Output {
         Self {
-            x: self.x / rhs.x,
-            y: self.y / rhs.y,
+            x: self.x / rhs,
+            y: self.y / rhs,
         }
     }
 }
@@ -87,11 +87,11 @@ impl<T> Point<T> where T: Float + Zero {
         Point {x, y}
     }
 
-    pub fn norm(self) -> T {
+    pub fn norm(&self) -> T {
         self.x * self.x + self.y * self.y
     }
 
-    pub fn abs(self) -> T {
+    pub fn abs(&self) -> T {
         self.norm().sqrt()
     }
 
@@ -124,16 +124,27 @@ impl<T> Segment<T> where T: Float + Zero {
         Segment {p1, p2}
     }
 
+    pub fn base_vector(&self) -> Vector<T> {
+        self.p2.clone() - self.p1.clone()
+    }
+
     pub fn is_orthogonal(&self, other: &Self) -> bool {
-        let vec1 = self.p2.clone() - self.p1.clone();
-        let vec2 = other.p2.clone() - other.p1.clone();
+        let vec1 = self.base_vector();
+        let vec2 = other.base_vector();
         vec1.is_orthogonal(&vec2)
     }
 
     pub fn is_parallel(&self, other: &Self) -> bool {
-        let vec1 = self.p2.clone() - self.p1.clone();
-        let vec2 = other.p2.clone() - other.p1.clone();
+        let vec1 = self.base_vector();
+        let vec2 = other.base_vector();
         vec1.is_parallel(&vec2)
+    }
+    
+    pub fn project(&self, point: &Point<T>) -> Point<T> {
+        let base = self.base_vector();
+        let hypo = point.clone() - self.p1.clone();
+        let r = hypo.dot_product(&base) / base.norm();
+        self.p1.clone() + base * r
     }
 }
 
