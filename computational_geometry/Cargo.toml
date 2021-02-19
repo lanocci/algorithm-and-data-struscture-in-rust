@@ -2,5 +2,6 @@
 members = [
   "parallel_orthogonal",
   "projection",
+  "reflection",
   "point",
 ]

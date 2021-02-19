@@ -31,7 +31,7 @@ fn solve() {
         let px: f64 = sc.read();
         let py: f64 = sc.read();
         let p = Point::new(px, py);
-        let ans = segment.project(&p);
+        let ans = segment.projection(&p);
         println!("{} {}", ans.x, ans.y);
     }
 }

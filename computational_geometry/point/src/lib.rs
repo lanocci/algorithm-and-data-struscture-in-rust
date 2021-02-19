@@ -1,6 +1,6 @@
 use std::ops;
 use std::cmp::*;
-use num_traits::{Float, Zero};
+use num_traits::{Float, Zero, cast::FromPrimitive};
 
 #[derive(Eq, Clone)]
 pub struct Point<T> where T: Float {
@@ -114,12 +114,12 @@ impl<T> Point<T> where T: Float + Zero {
 
 type Vector<T> = Point<T>;
 
-pub struct Segment<T> where T: Float + Zero {
+pub struct Segment<T> where T: Float + Zero + FromPrimitive {
     p1: Point<T>,
     p2: Point<T>,
 }
 
-impl<T> Segment<T> where T: Float + Zero {
+impl<T> Segment<T> where T: Float + Zero + FromPrimitive {
     pub fn new(p1: Point<T>, p2: Point<T>) -> Self {
         Segment {p1, p2}
     }
@@ -140,11 +140,20 @@ impl<T> Segment<T> where T: Float + Zero {
         vec1.is_parallel(&vec2)
     }
     
-    pub fn project(&self, point: &Point<T>) -> Point<T> {
+    /// calculate projection point (get projection point in form of vector and add original point back)
+    pub fn projection(&self, point: &Point<T>) -> Point<T> {
+        // convert self into vector (set p1 to the Origin)
         let base = self.base_vector();
+        // vector of given point from p1
         let hypo = point.clone() - self.p1.clone();
+        // ratio of t to base, where t is the vector from the Origin to projetion point
         let r = hypo.dot_product(&base) / base.norm();
         self.p1.clone() + base * r
+    }
+
+    /// calculate reflection point (get projection point and double the vector from p to projection point)
+    pub fn reflection(&self, point: &Point<T>) -> Point<T> {
+        point.clone() + (self.projection(point) - point.clone()) * T::from_usize(2).unwrap()
     }
 }
 
