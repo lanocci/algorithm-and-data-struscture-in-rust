@@ -159,8 +159,20 @@ impl<T> Segment<T> where T: Float + Zero + FromPrimitive {
 
 #[cfg(test)]
 mod tests {
+    use super::*;
+
     #[test]
-    fn it_works() {
-        assert_eq!(2 + 2, 4);
+    fn segment_test() {
+        let parallel_segment1 = Segment::new(Point::new(0.0, 0.0), Point::new(3.0, 0.0));
+        let parallel_segment2 = Segment::new(Point::new(0.0, 2.0), Point::new(3.0, 2.0));
+
+        let orthogonal_segment1 = Segment::new(Point::new(0.0, 1.0), Point::new(4.0, 0.0));
+        let orthogonal_segment2 = Segment::new(Point::new(0.0, 1.0), Point::new(-1.0, -3.0));
+
+        assert!(orthogonal_segment1.is_orthogonal(&orthogonal_segment2));
+        assert!(!parallel_segment1.is_orthogonal(&parallel_segment2));
+
+        assert!(parallel_segment1.is_parallel(&parallel_segment2));
+        assert!(!orthogonal_segment1.is_parallel(&orthogonal_segment2));
     }
 }
