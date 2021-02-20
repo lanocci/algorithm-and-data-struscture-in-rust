@@ -190,6 +190,40 @@ impl<T> Segment<T> where T: Float + Zero + FromPrimitive {
         //TODO: implement
         false
     }
+
+    /// ```
+    /// use point::{Point, Segment, PointLocation};
+    /// let seg = Segment::new(Point::new(0.0, 0.0), Point::new(2.0, 0.0));
+    /// let p1 = Point::new(-1.0, 1.0);
+    /// assert_eq!(seg.clockwise(&p1), PointLocation::CounterClockwise);
+    /// ```
+    pub fn clockwise(&self, point: &Point<T>) -> PointLocation {
+        let base = self.base_vector();
+        let hypo = point.clone() - self.p1.clone();
+        if base.cross_product(&hypo) > T::from_f32(0.0).unwrap() {
+            PointLocation::CounterClockwise
+        } else if base.cross_product(&hypo) < T::from_f32(0.0).unwrap() {
+            PointLocation::Clockwise
+        } else {
+            if base.dot_product(&hypo) < T::from_f32(0.0).unwrap() {
+                PointLocation::OnlineBack
+            } else if hypo.abs() > base.abs() {
+                PointLocation::OnlineFront
+            } else {
+                PointLocation::OnSegment
+            }
+        }
+    }
+
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum PointLocation {
+    Clockwise,
+    CounterClockwise,
+    OnlineBack,
+    OnlineFront,
+    OnSegment,
 }
 
 #[cfg(test)]
