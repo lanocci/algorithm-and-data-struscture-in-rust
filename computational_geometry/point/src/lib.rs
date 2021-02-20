@@ -110,6 +110,10 @@ impl<T> Point<T> where T: Float + Zero {
     pub fn is_parallel(&self, other: &Self) -> bool {
         self.cross_product(other).is_zero()
     }
+
+    pub fn distance(&self, other: &Self) -> T {
+        (self.clone() - other.clone()).abs()
+    }
 }
 
 type Vector<T> = Point<T>;
@@ -154,6 +158,37 @@ impl<T> Segment<T> where T: Float + Zero + FromPrimitive {
     /// calculate reflection point (get projection point and double the vector from p to projection point)
     pub fn reflection(&self, point: &Point<T>) -> Point<T> {
         point.clone() + (self.projection(point) - point.clone()) * T::from_usize(2).unwrap()
+    }
+
+    pub fn distance_from_point(&self, point: &Point<T>) -> T {
+        if (self.p2.clone() - self.p1.clone()).dot_product(&(point.clone() - self.p1.clone())) < T::from_f32(0.0).unwrap() {
+            return (point.clone() - self.p1.clone()).abs()
+        }
+        if (self.p1.clone() - self.p2.clone()).dot_product(&(point.clone() - self.p2.clone())) < T::from_f32(0.0).unwrap() {
+            return (point.clone() - self.p2.clone()).abs()
+        }
+        (self.p2.clone() - self.p1.clone()).cross_product(&(point.clone() - self.p1.clone())) / (self.p2.clone() - self.p1.clone()).abs()
+    }
+
+    /// calculate distance from a segment to another
+    /// ```
+    /// use point::{Segment, Point};
+    /// let segment1 = Segment::new(Point::new(1.0, 0.0), Point::new(1.0, 0.0));
+    /// let segment2 = Segment::new(Point::new(0.0, 1.0), Point::new(1.0, 1.0));
+    /// assert_eq!(segment1.distance(&segment2), 1.0);
+    /// ```
+    pub fn distance(&self, other: &Self) -> T {
+        if self.intercept(other) { T::from_f32(0.0).unwrap() }
+        else {
+            let min_from_s1 = self.distance_from_point(&other.p1).min(self.distance_from_point(&other.p2));
+            let min_from_s2 = other.distance_from_point(&self.p1).min(other.distance_from_point(&self.p2));
+            min_from_s1.min(min_from_s2).abs()
+        }
+    }
+
+    pub fn intercept(&self, other: &Self) -> bool {
+        //TODO: implement
+        false
     }
 }
 
