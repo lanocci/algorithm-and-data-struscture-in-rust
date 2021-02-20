@@ -195,7 +195,15 @@ impl<T> Segment<T> where T: Float + Zero + FromPrimitive {
     /// use point::{Point, Segment, PointLocation};
     /// let seg = Segment::new(Point::new(0.0, 0.0), Point::new(2.0, 0.0));
     /// let p1 = Point::new(-1.0, 1.0);
+    /// let p2 = Point::new(-1.0, -1.0);
+    /// let p3 = Point::new(-1.0, 0.0);
+    /// let p4 = Point::new(0.0, 0.0);
+    /// let p5 = Point::new(3.0, 0.0);
     /// assert_eq!(seg.clockwise(&p1), PointLocation::CounterClockwise);
+    /// assert_eq!(seg.clockwise(&p2), PointLocation::Clockwise);
+    /// assert_eq!(seg.clockwise(&p3), PointLocation::OnlineBack);
+    /// assert_eq!(seg.clockwise(&p4), PointLocation::OnSegment);
+    /// assert_eq!(seg.clockwise(&p5), PointLocation::OnlineFront);
     /// ```
     pub fn clockwise(&self, point: &Point<T>) -> PointLocation {
         let base = self.base_vector();
