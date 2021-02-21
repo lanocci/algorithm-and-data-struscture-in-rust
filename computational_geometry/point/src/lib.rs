@@ -178,17 +178,12 @@ impl<T> Segment<T> where T: Float + Zero + FromPrimitive {
     /// assert_eq!(segment1.distance(&segment2), 1.0);
     /// ```
     pub fn distance(&self, other: &Self) -> T {
-        if self.intercept(other) { T::from_f32(0.0).unwrap() }
+        if self.intersection(other) { T::from_f32(0.0).unwrap() }
         else {
             let min_from_s1 = self.distance_from_point(&other.p1).min(self.distance_from_point(&other.p2));
             let min_from_s2 = other.distance_from_point(&self.p1).min(other.distance_from_point(&self.p2));
             min_from_s1.min(min_from_s2).abs()
         }
-    }
-
-    pub fn intercept(&self, other: &Self) -> bool {
-        //TODO: implement
-        false
     }
 
     /// ```
@@ -223,6 +218,23 @@ impl<T> Segment<T> where T: Float + Zero + FromPrimitive {
         }
     }
 
+    /// ```
+    /// use point::{Segment, Point};
+    /// 
+    /// let segment1 = Segment::new(Point::new(0.0, 0.0), Point::new(3.0, 0.0));
+    /// let segment2 = Segment::new(Point::new(1.0, 1.0), Point::new(2.0, -1.0));
+    /// assert!(segment1.intersection(&segment2));
+    /// let segment2 = Segment::new(Point::new(3.0, -2.0), Point::new(5.0, 0.0));
+    /// assert!(!segment1.intersection(&segment2));
+    /// ```
+    pub fn intersection(&self, other: &Self) -> bool {
+        let s1p3 = self.clockwise(&other.p1);
+        let s1p4 = self.clockwise(&other.p2);
+        let s2p1 = other.clockwise(&self.p1);
+        let s2p2 = other.clockwise(&self.p2);
+        s1p3.intersection(&s1p4) && s2p1.intersection(&s2p2)
+    }
+
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -232,6 +244,28 @@ pub enum PointLocation {
     OnlineBack,
     OnlineFront,
     OnSegment,
+}
+
+impl PointLocation {
+    pub fn intersection(&self, other: &Self) -> bool {
+        match self {
+            Self::Clockwise => {
+                other.clone() == Self::CounterClockwise || other.clone() == Self::OnSegment
+            },
+            Self::CounterClockwise => {
+                other.clone() == Self::Clockwise || other.clone() == Self::OnSegment
+            },
+            Self::OnSegment => {
+                other.clone() == Self::Clockwise || other.clone() == Self::OnSegment || other.clone() == Self::CounterClockwise
+            },
+            Self::OnlineBack => {
+                false
+            },
+            Self::OnlineFront => {
+                false
+            }
+        }
+    }
 }
 
 #[cfg(test)]
