@@ -2,7 +2,7 @@ use std::ops;
 use std::cmp::*;
 use num_traits::{Float, Zero, cast::FromPrimitive};
 
-#[derive(Eq, Clone)]
+#[derive(Eq, Clone, Debug)]
 pub struct Point<T> where T: Float {
     pub x: T,
     pub y: T,
@@ -224,6 +224,8 @@ impl<T> Segment<T> where T: Float + Zero + FromPrimitive {
     /// let segment1 = Segment::new(Point::new(0.0, 0.0), Point::new(3.0, 0.0));
     /// let segment2 = Segment::new(Point::new(1.0, 1.0), Point::new(2.0, -1.0));
     /// assert!(segment1.intersection(&segment2));
+    /// let segment2 = Segment::new(Point::new(3.0, 1.0), Point::new(3.0, -1.0));
+    /// assert!(segment1.intersection(&segment2));
     /// let segment2 = Segment::new(Point::new(3.0, -2.0), Point::new(5.0, 0.0));
     /// assert!(!segment1.intersection(&segment2));
     /// ```
@@ -233,6 +235,27 @@ impl<T> Segment<T> where T: Float + Zero + FromPrimitive {
         let s2p1 = other.clockwise(&self.p1);
         let s2p2 = other.clockwise(&self.p2);
         s1p3.intersection(&s1p4) && s2p1.intersection(&s2p2)
+    }
+
+    /// ```
+    /// use point::{Point, Segment};
+    /// 
+    /// let s1 = Segment::new(Point::new(0.0, 0.0), Point::new(2.0, 0.0));
+    /// let s2 = Segment::new(Point::new(1.0, 1.0), Point::new(1.0, -1.0));
+    /// assert_eq!(s1.cross_point(&s2), Point{x: 1.0,y:0.0 });
+    /// 
+    /// let s1 = Segment::new(Point::new(0.0, 0.0), Point::new(1.0, 1.0));
+    /// let s2 = Segment::new(Point::new(0.0, 1.0), Point::new(1.0, 0.0));
+    /// assert_eq!(s1.cross_point(&s2), Point{x: 0.5,y: 0.5 });
+    /// ```
+    pub fn cross_point(&self, other: &Self) -> Point<T> {
+        let hypo1 = other.p2.clone() - self.p1.clone();
+        let hypo2 = self.p2.clone() - other.p1.clone();
+        let base = other.base_vector();
+        let d1 = hypo1.cross_product(&base).abs()/base.clone().abs();
+        let d2 = hypo2.cross_product(&base).abs()/base.clone().abs();
+        let t = d1 / (d1 + d2);
+        self.p1.clone() + (self.p2.clone() - self.p1.clone())*t
     }
 
 }
