@@ -252,13 +252,18 @@ impl<T> Segment<T> where T: Float + Zero + FromPrimitive {
         let hypo1 = other.p2.clone() - self.p1.clone();
         let hypo2 = self.p2.clone() - other.p1.clone();
         let base = other.base_vector();
-        let d1 = hypo1.cross_product(&base).abs()/base.clone().abs();
-        let d2 = hypo2.cross_product(&base).abs()/base.clone().abs();
+        //let d1 = hypo1.cross_product(&base).abs()/base.clone().abs();
+        //let d2 = hypo2.cross_product(&base).abs()/base.clone().abs();
+        // t を計算するときに約分で自動的に消えるので, baseでの除算は省略しても結果が変わらない
+        let d1 = hypo1.cross_product(&base).abs();
+        let d2 = hypo2.cross_product(&base).abs();
         let t = d1 / (d1 + d2);
         self.p1.clone() + (self.p2.clone() - self.p1.clone())*t
     }
 
 }
+
+pub type Line<T> = Segment<T>;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum PointLocation {
@@ -288,6 +293,44 @@ impl PointLocation {
                 false
             }
         }
+    }
+}
+
+#[derive(Clone, Debug)]
+pub struct Circle<T> where T: Float + FromPrimitive + Zero {
+    center: Point<T>,
+    radius: T,
+}
+
+impl<T> Circle<T> where T: Float + FromPrimitive + Zero {
+    pub fn new(x: T, y: T, r: T) -> Self {
+        Circle {
+            center: Point::new(x, y),
+            radius: r,
+        }
+    }
+
+    pub fn line_intersect(&self, line: &Line<T>) -> bool {
+        line.distance_from_point(&self.center) < self.radius
+    }
+
+    /// ```
+    /// use point::{Point, Line, Circle};
+    /// 
+    /// let c = Circle::new(2.0, 1.0, 1.0);
+    /// let l = Line::new(Point::new(0.0, 1.0), Point::new(4.0, 1.0));
+    /// assert_eq!(c.line_cross_points(&l), Ok((Point{x: 1.0, y: 1.0}, Point{x: 3.0, y:1.0})));
+    /// ```
+    pub fn line_cross_points(&self, line: &Line<T>) -> Result<(Point<T>, Point<T>), String> {
+        if self.line_intersect(&line) {
+            let pr = line.projection(&self.center);
+            let e = line.base_vector() / line.base_vector().abs();
+            let base = (self.radius.clone().powi(2) + (pr.clone() - self.center.clone()).norm()).sqrt();
+            Ok((pr.clone() - e.clone() * base.clone(), pr.clone() + e.clone() * base.clone()))
+        } else {
+            Err("line doesn't intersects the circle".to_string())
+        }
+
     }
 }
 
