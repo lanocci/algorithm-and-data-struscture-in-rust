@@ -1,5 +1,6 @@
 use std::ops;
 use std::cmp::*;
+use std::fmt::Debug;
 use num_traits::{Float, Zero, cast::FromPrimitive};
 
 #[derive(Eq, Clone, Debug)]
@@ -113,6 +114,11 @@ impl<T> Point<T> where T: Float + Zero {
 
     pub fn distance(&self, other: &Self) -> T {
         (self.clone() - other.clone()).abs()
+    }
+
+    /// returns gradient of the vector to x axis
+    pub fn declination(&self) -> T {
+        self.y.atan2(self.x)
     }
 }
 
@@ -302,12 +308,16 @@ pub struct Circle<T> where T: Float + FromPrimitive + Zero {
     radius: T,
 }
 
-impl<T> Circle<T> where T: Float + FromPrimitive + Zero {
+impl<T> Circle<T> where T: Float + FromPrimitive + Zero + Debug {
     pub fn new(x: T, y: T, r: T) -> Self {
         Circle {
             center: Point::new(x, y),
             radius: r,
         }
+    }
+
+    pub fn polar(&self, radian: T) -> Vector<T> {
+        Vector::new(self.radius.cos() * radian, self.radius.sin() * radian)
     }
 
     pub fn line_intersect(&self, line: &Line<T>) -> bool {
@@ -330,8 +340,30 @@ impl<T> Circle<T> where T: Float + FromPrimitive + Zero {
         } else {
             Err("line doesn't intersects the circle".to_string())
         }
-
     }
+
+    pub fn intersect(&self, other: &Self) -> bool {
+        self.center.distance(&other.center) <= self.radius + other.radius
+    }
+
+    /// ```
+    /// use point::{Point, Circle};
+    /// let c1 = Circle::new(0.0, 0.0, 2.0);
+    /// let c2 = Circle::new(2.0, 0.0, 2.0);
+    /// assert_eq!(c1.cross_points(&c2), Ok((Point{x: 1.0, y: -1.7320508}, Point{x: 1.0, y: 1.732508})));
+    /// ```
+    pub fn cross_points(&self, other: &Self) -> Result<(Point<T>, Point<T>), String> {
+        if self.intersect(&other) {
+            let d = self.center.distance(&other.center);
+            let a = ((self.radius.powi(2) + d.powi(2) - other.radius.powi(2)) / T::from_i8(2).unwrap() * self.radius * d).cos();
+            println!("a: {:?}", a);
+            let t = (other.center.clone() - self.center.clone()).declination();
+            Ok((self.center.clone() + self.polar(t + a), self.center.clone() + self.polar(t - a)))
+        } else {
+            Err("no intersection".to_string())
+        }
+    }
+
 }
 
 #[cfg(test)]
