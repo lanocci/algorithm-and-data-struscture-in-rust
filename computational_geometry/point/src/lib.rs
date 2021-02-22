@@ -317,7 +317,7 @@ impl<T> Circle<T> where T: Float + FromPrimitive + Zero + Debug {
     }
 
     pub fn polar(&self, radian: T) -> Vector<T> {
-        Vector::new(self.radius.cos() * radian, self.radius.sin() * radian)
+        Vector::new(radian.cos() * self.radius, radian.sin() * self.radius)
     }
 
     pub fn line_intersect(&self, line: &Line<T>) -> bool {
@@ -350,15 +350,22 @@ impl<T> Circle<T> where T: Float + FromPrimitive + Zero + Debug {
     /// use point::{Point, Circle};
     /// let c1 = Circle::new(0.0, 0.0, 2.0);
     /// let c2 = Circle::new(2.0, 0.0, 2.0);
-    /// assert_eq!(c1.cross_points(&c2), Ok((Point{x: 1.0, y: -1.7320508}, Point{x: 1.0, y: 1.732508})));
+    /// if let Ok((point1, point2)) = c1.cross_points(&c2){
+    ///     assert!(point1.x - 1.0 < 0.000001 && point1.x - 1.0 > -0.00000001);
+    ///     assert!(point1.y - (-1.7320508) < 0.000001 && point1.y - (-1.7320508) > -0.000001);
+    ///     assert!(point2.x - 1.0 < 0.000001 && point2.x - 1.0 > -0.00000001);
+    ///     assert!(point2.y - 1.7320508 < 0.000001 && point2.y - 1.7320508 > -0.00000001);
+    /// } else {
+    ///     panic!();
+    /// }
     /// ```
     pub fn cross_points(&self, other: &Self) -> Result<(Point<T>, Point<T>), String> {
         if self.intersect(&other) {
             let d = self.center.distance(&other.center);
-            let a = ((self.radius.powi(2) + d.powi(2) - other.radius.powi(2)) / T::from_i8(2).unwrap() * self.radius * d).cos();
+            let a = ((self.radius.powi(2) + d.powi(2) - other.radius.powi(2)) / (T::from_i8(2).unwrap() * self.radius * d)).acos();
             println!("a: {:?}", a);
             let t = (other.center.clone() - self.center.clone()).declination();
-            Ok((self.center.clone() + self.polar(t + a), self.center.clone() + self.polar(t - a)))
+            Ok((self.center.clone() + self.polar(t - a), self.center.clone() + self.polar(t + a)))
         } else {
             Err("no intersection".to_string())
         }
