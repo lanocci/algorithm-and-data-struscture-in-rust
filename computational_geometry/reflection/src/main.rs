@@ -1,6 +1,7 @@
 use std::io::*;
 use util::Scanner;
-use point::{Point, Segment};
+use geometric_element::point::Point;
+use geometric_element::segment::Segment;
 
 fn main() {
     std::thread::Builder::new()

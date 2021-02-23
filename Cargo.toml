@@ -4,6 +4,7 @@ members = [
   "computational_geometry/projection",
   "computational_geometry/point",
   "computational_geometry/reflection",
+  "computational_geometry/geometric_element",
   "data_structure/queue",
   "data_structure/stack",
   "data_structure/doubly_linked_list",
