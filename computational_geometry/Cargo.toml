@@ -3,6 +3,5 @@ members = [
   "parallel_orthogonal",
   "projection",
   "reflection",
-  "point",
   "geometric_element",
 ]
