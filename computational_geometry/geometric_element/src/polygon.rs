@@ -1,15 +1,22 @@
 use std::fmt::Debug;
+use std::collections::VecDeque;
 use std::mem;
-use num_traits::{Float, Zero};
+use std::cmp::Ordering;
+use num_traits::{Float, Zero, FromPrimitive};
 
 use crate::point::Point;
+use crate::segment;
 
 #[derive(Clone, Debug)]
-pub struct Polygon<T>(Vec<Point<T>>) where T: Float + Zero;
+pub struct Polygon<T>(Vec<Point<T>>) where T: Float + Zero + FromPrimitive;
 
-impl<T> Polygon<T> where T: Float + Zero + Debug {
+impl<T> Polygon<T> where T: Float + Zero + FromPrimitive + Debug {
     pub fn new(points: Vec<Point<T>>) -> Self {
         Polygon(points)
+    }
+
+    pub fn len(&self) -> usize {
+        self.0.len()
     }
 
     /// ```
@@ -40,7 +47,7 @@ impl<T> Polygon<T> where T: Float + Zero + Debug {
             if a.y > b.y {
                 mem::swap(&mut a, &mut b);
             }
-            if a.cross_product(&b).is_sign_positive() && (a.y.is_sign_negative() || a.y.is_zero()) && (b.y.is_sign_positive() || b.y.is_zero()) {
+            if a.cross_product(&b).is_sign_positive() && (a.y.is_sign_negative() || a.y.is_zero()) && b.y.is_sign_positive() {
                 is_in = !is_in;
             }
         }
@@ -49,6 +56,67 @@ impl<T> Polygon<T> where T: Float + Zero + Debug {
         } else {
             PointLocation::Out
         }
+    }
+
+    /// convex hull implementation with Andrew's algorithm
+    /// ```
+    /// use geometric_element::polygon::Polygon;
+    /// use geometric_element::point::Point;
+    /// let polygon = Polygon::new(
+    ///     vec![Point::new(2., 1.), Point::new(0., 0.), Point::new(1., 2.), Point::new(2., 2.), Point::new(4., 2.), Point::new(1., 3.), Point::new(3., 3.)]
+    /// );
+    /// assert_eq!(polygon.convex_hull().len(), 5);
+    /// ```
+    pub fn convex_hull(&self) -> Self {
+        if self.0.len() < 3 { panic!() }
+        let mut s = self.0.clone();
+        s.sort_by(|a, b| {
+            if a.x < b.x { Ordering::Less } 
+            else if a.x > b.x { Ordering::Greater } 
+            else if a.y < b.y { Ordering::Less } 
+            else if a.y > a.y { Ordering::Greater } 
+            else { Ordering::Equal }
+        });
+
+        for p in Vec::from(s.clone()).iter() {
+            println!("S: ({:?}, {:?})", p.x, p.y);
+        }
+
+        let mut u = VecDeque::new();
+        u.push_back(s[0].clone());
+        u.push_back(s[1].clone());
+        for p in s.iter().skip(2) {
+            for i in (2..(u.len())).rev() {
+                let s = segment::Segment::new(u[i-1].clone(), u[i].clone());
+                if s.clockwise(p) != segment::PointLocation::Clockwise {
+                    u.pop_back();
+                } else {
+                    break;
+                }
+            }
+            u.push_back(p.clone());
+        }
+
+        s.reverse();
+        let mut l = VecDeque::new();
+        l.push_back(s[0].clone());
+        l.push_back(s[1].clone());
+        for p in s.iter().skip(2) {
+            for i in (2..(l.len())).rev() {
+                let s = segment::Segment::new(l[i-1].clone(), l[i].clone());
+                if s.clockwise(p) != segment::PointLocation::Clockwise {
+                    l.pop_back();
+                } else {
+                    break;
+                }
+            }
+            l.push_back(p.clone());
+        }
+
+        for p in l.iter().skip(1).rev().skip(1) {
+            u.push_back(p.clone());
+        }
+        Polygon::new(Vec::from(u))
     }
 }
 
