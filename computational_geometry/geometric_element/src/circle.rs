@@ -53,6 +53,7 @@ impl<T> Circle<T> where T: Float + FromPrimitive + Zero + Debug {
     /// ```
     /// use geometric_element::point::Point;
     /// use geometric_element::circle::Circle;
+    /// use num_traits::identities::Zero;
     /// let c1 = Circle::new(0.0, 0.0, 2.0);
     /// let c2 = Circle::new(2.0, 0.0, 2.0);
     /// if let Ok((point1, point2)) = c1.cross_points(&c2){
@@ -68,7 +69,6 @@ impl<T> Circle<T> where T: Float + FromPrimitive + Zero + Debug {
         if self.intersect(&other) {
             let d = self.center.distance(&other.center);
             let a = ((self.radius.powi(2) + d.powi(2) - other.radius.powi(2)) / (T::from_i8(2).unwrap() * self.radius * d)).acos();
-            println!("a: {:?}", a);
             let t = (other.center.clone() - self.center.clone()).declination();
             Ok((self.center.clone() + self.polar(t - a), self.center.clone() + self.polar(t + a)))
         } else {
