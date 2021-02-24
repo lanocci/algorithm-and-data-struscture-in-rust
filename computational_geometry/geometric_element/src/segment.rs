@@ -87,16 +87,21 @@ impl<T> Segment<T> where T: Float + Zero + FromPrimitive + Debug {
     /// assert_eq!(seg.clockwise(&p3), PointLocation::OnlineBack);
     /// assert_eq!(seg.clockwise(&p4), PointLocation::OnSegment);
     /// assert_eq!(seg.clockwise(&p5), PointLocation::OnlineFront);
+    /// 
+    /// let seg = Segment::new(Point::new(0.0, 0.0), Point::new(1.0, 3.0));
+    /// let p6 = Point::new(2.0, 1.0);
+    /// assert_eq!(seg.clockwise(&p6), PointLocation::Clockwise);
+    /// 
     /// ```
     pub fn clockwise(&self, point: &Point<T>) -> PointLocation {
         let base = self.base_vector();
         let hypo = point.clone() - self.p1.clone();
         if base.cross_product(&hypo) > T::from_f32(0.0).unwrap() {
             PointLocation::CounterClockwise
-        } else if base.cross_product(&hypo) < T::from_f32(0.0).unwrap() {
+        } else if base.cross_product(&hypo).is_sign_negative() {
             PointLocation::Clockwise
         } else {
-            if base.dot_product(&hypo) < T::from_f32(0.0).unwrap() {
+            if base.dot_product(&hypo).is_sign_negative() {
                 PointLocation::OnlineBack
             } else if hypo.abs() > base.abs() {
                 PointLocation::OnlineFront

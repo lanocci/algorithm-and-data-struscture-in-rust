@@ -101,7 +101,7 @@ impl<T> Point<T> where T: Float + Zero {
     }
 
     pub fn cross_product(&self, other: &Self) -> T {
-        self.x * other.y + self.y * other.x
+        self.x * other.y - self.y * other.x
     }
 
     pub fn is_orthogonal(&self, other: &Self) -> bool {
