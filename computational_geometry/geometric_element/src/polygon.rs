@@ -47,7 +47,7 @@ impl<T> Polygon<T> where T: Float + Zero + FromPrimitive + Debug {
             if a.y > b.y {
                 mem::swap(&mut a, &mut b);
             }
-            if a.cross_product(&b).is_sign_positive() && (a.y.is_sign_negative() || a.y.is_zero()) && (b.y.is_sign_positive() || b.y.is_zero()) {
+            if a.cross_product(&b).is_sign_positive() && a.y.is_sign_negative() && b.y.is_sign_positive() {
                 is_in = !is_in;
             }
         }
@@ -88,10 +88,7 @@ impl<T> Polygon<T> where T: Float + Zero + FromPrimitive + Debug {
         for p in s.iter().skip(2) {
             for i in (2..(u.len() + 1)).rev() {
                 let seg = segment::Segment::new(u[i-2].clone(), u[i-1].clone());
-                let clock = seg.clockwise(p);
-                println!("p({:?}, {:?}), is {:?} to s({:?}, {:?}) -> ({:?}, {:?})", p.x, p.y, clock, seg.p1.x, seg.p1.y, seg.p2.x, seg.p2.y);
-                if clock != segment::PointLocation::Clockwise {
-                //if s.clockwise(p) != segment::PointLocation::Clockwise {
+                if seg.clockwise(p) != segment::PointLocation::Clockwise {
                     u.pop_back();
                 } else {
                     break;
@@ -100,11 +97,6 @@ impl<T> Polygon<T> where T: Float + Zero + FromPrimitive + Debug {
             u.push_back(p.clone());
         }
 
-        for p in u.clone().iter() {
-            println!("u: ({:?}, {:?})", p.x, p.y);
-        }
-
-        println!("=========== start creating L =================");
         s.reverse();
         let mut l = VecDeque::new();
         l.push_back(s[0].clone());
@@ -112,10 +104,7 @@ impl<T> Polygon<T> where T: Float + Zero + FromPrimitive + Debug {
         for p in s.iter().skip(2) {
             for i in (2..(l.len()+1)).rev() {
                 let seg = segment::Segment::new(l[i-2].clone(), l[i-1].clone());
-                let clock = seg.clockwise(p);
-                println!("p({:?}, {:?}), is {:?} to s({:?}, {:?}) -> ({:?}, {:?})", p.x, p.y, clock, seg.p1.x, seg.p1.y, seg.p2.x, seg.p2.y);
-                if clock != segment::PointLocation::Clockwise {
-                //if seg.clockwise(p) != segment::PointLocation::Clockwise {
+                if seg.clockwise(p) != segment::PointLocation::Clockwise {
                     l.pop_back();
                 } else {
                     break;
@@ -124,16 +113,10 @@ impl<T> Polygon<T> where T: Float + Zero + FromPrimitive + Debug {
             l.push_back(p.clone());
         }
 
-        for p in l.clone().iter() {
-            println!("l: ({:?}, {:?})", p.x, p.y);
-        }
         let mut result = Vec::from(l);
         result.reverse();
         for p in u.iter().skip(1).rev().skip(1) {
             result.push(p.clone());
-        }
-        for p in Vec::from(result.clone()).iter() {
-            println!("result: ({:?}, {:?})", p.x, p.y);
         }
         Polygon::new(result)
     }
