@@ -86,10 +86,14 @@ impl<T> Polygon<T> where T: Float + Zero + FromPrimitive + Debug {
         u.push_back(s[0].clone());
         u.push_back(s[1].clone());
         for p in s.iter().skip(2) {
-            for i in (2..(u.len())).rev() {
-                let s = segment::Segment::new(u[i-1].clone(), u[i].clone());
-                if s.clockwise(p) != segment::PointLocation::Clockwise {
-                    u.pop_back();
+            for i in (2..(u.len() + 1)).rev() {
+                let s = segment::Segment::new(u[i-2].clone(), u[i-1].clone());
+                let clock = s.clockwise(p);
+                println!("p({:?}, {:?}), is {:?} to s({:?}, {:?}) -> ({:?}, {:?})", p.x, p.y, clock, s.p1.x, s.p1.y, s.p2.x, s.p2.y);
+                if clock != segment::PointLocation::Clockwise {
+                //if s.clockwise(p) != segment::PointLocation::Clockwise {
+                    let b = u.pop_back();
+                    println!("({:?}, {:?})", b.clone().unwrap().x, b.clone().unwrap().y);
                 } else {
                     break;
                 }
@@ -102,8 +106,8 @@ impl<T> Polygon<T> where T: Float + Zero + FromPrimitive + Debug {
         l.push_back(s[0].clone());
         l.push_back(s[1].clone());
         for p in s.iter().skip(2) {
-            for i in (2..(l.len())).rev() {
-                let s = segment::Segment::new(l[i-1].clone(), l[i].clone());
+            for i in (2..(l.len()+1)).rev() {
+                let s = segment::Segment::new(l[i-2].clone(), l[i-1].clone());
                 if s.clockwise(p) != segment::PointLocation::Clockwise {
                     l.pop_back();
                 } else {
@@ -113,10 +117,14 @@ impl<T> Polygon<T> where T: Float + Zero + FromPrimitive + Debug {
             l.push_back(p.clone());
         }
 
+        let mut result = Vec::from(u);
         for p in l.iter().skip(1).rev().skip(1) {
-            u.push_back(p.clone());
+            result.push(p.clone());
         }
-        Polygon::new(Vec::from(u))
+        for p in Vec::from(result.clone()).iter() {
+            println!("result: ({:?}, {:?})", p.x, p.y);
+        }
+        Polygon::new(s)
     }
 }
 

@@ -4,12 +4,12 @@ use num_traits::{Float, Zero, cast::FromPrimitive};
 
 use crate::point::{Point, Vector};
 
-pub struct Segment<T> where T: Float + Zero + FromPrimitive {
-    p1: Point<T>,
-    p2: Point<T>,
+pub struct Segment<T> where T: Float + Zero + FromPrimitive + Debug {
+    pub p1: Point<T>,
+    pub p2: Point<T>,
 }
 
-impl<T> Segment<T> where T: Float + Zero + FromPrimitive {
+impl<T> Segment<T> where T: Float + Zero + FromPrimitive + Debug {
     pub fn new(p1: Point<T>, p2: Point<T>) -> Self {
         Segment {p1, p2}
     }
