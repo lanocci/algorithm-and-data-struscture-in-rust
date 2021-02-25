@@ -3,5 +3,6 @@ members = [
   "parallel_orthogonal",
   "projection",
   "reflection",
+  "manhattan_geometry",
   "geometric_element",
 ]
