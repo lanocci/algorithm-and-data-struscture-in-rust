@@ -72,11 +72,32 @@ fn solve() {
         else {Ordering::Equal}
     });
 
-    let mut t: BTreeSet<i32> = BTreeSet::new();
+    let mut t: BTreeSet<usize> = BTreeSet::new();
 
+    let mut cnt = 0;
     for p in ep.iter() {
-        
+        match p.position {
+            Position::Top => {
+                t.remove(&p.seg_id);
+            },
+            Position::Bottom => {
+                t.insert(p.seg_id);
+            },
+            Position::Left => {
+                let seg = segments[p.seg_id].clone();
+                //let b = t.range((seg.p1.x as usize)..);
+                //let e = t.range(..(seg.p2.x as usize));
+                //for w in b {
+                //    for x in e.clone() {
+                //        if w == x { cnt += 1; }
+                //    }
+                //}
+            },
+            Position::Right => {}
+        }
     }
+
+    println!("{}", cnt);
 
 }
 

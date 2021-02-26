@@ -4,6 +4,7 @@ use num_traits::{Float, Zero, cast::FromPrimitive};
 
 use crate::point::{Point, Vector};
 
+#[derive(Clone)]
 pub struct Segment<T> where T: Float + Zero + FromPrimitive + Debug {
     pub p1: Point<T>,
     pub p2: Point<T>,
