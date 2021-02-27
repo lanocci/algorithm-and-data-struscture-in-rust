@@ -7,4 +7,5 @@ members = [
   "matrix_chain_multiplication",
   "coin_changing_problem",
   "knapsac_problem",
+  "longest_increasing_subsequence",
 ]

@@ -46,6 +46,7 @@ members = [
   "strategy/matrix_chain_multiplication",
   "strategy/coin_changing_problem",
   "strategy/knapsac_problem",
+  "strategy/longest_increasing_subsequence",
   "util",
 ]
 exclude = ["computational_geometry", "data_structure", "sorts", "search", "strategy"]
