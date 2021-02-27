@@ -44,6 +44,7 @@ members = [
   "strategy/fibonacci",
   "strategy/lcs",
   "strategy/matrix_chain_multiplication",
+  "strategy/coin_changing_problem",
   "util",
 ]
 exclude = ["computational_geometry", "data_structure", "sorts", "search", "strategy"]

@@ -5,4 +5,5 @@ members = [
   "fibonacci",
   "lcs",
   "matrix_chain_multiplication",
+  "coin_changing_problem",
 ]
