@@ -19,7 +19,6 @@ fn solve() {
 
     let a = {
         let mut a: Vec<i32> = Vec::new();
-        a.push(i32::MIN);
         for _ in 0..n {
             a.push(sc.read());
         }
@@ -29,8 +28,11 @@ fn solve() {
     println!("{}", result);
 }
 
-fn naive_lis(a: &Vec<i32>) -> usize {
+fn naive_lis(a: &mut Vec<i32>) -> usize {
     let n = a.len();
+    a.reverse();
+    a.push(i32::MIN);
+    a.reverse();
 
     // list of length of LIS when a[i] is the last element in the LIS
     let mut l: Vec<usize> = vec![0; n];
@@ -55,20 +57,23 @@ fn lis(a: &Vec<i32>) -> usize {
     let n = a.len();
 
     // a vector of the smallest last element of LIS when length of LIS is i + 1
-    let mut l: Vec<i32> = Vec::new();
-    l.push(a[0]);
+    let mut last_elements: Vec<i32> = Vec::new();
 
     for &v in a.iter() {
-        if *l.last().unwrap() < v {
-            l.push(v)
-        } else {
-            for last in l.iter_mut() {
-                if *last > v {
-                    *last = v;
-                    break;
+        if let Some(last) = last_elements.last() {
+            if *last < v {
+                last_elements.push(v);
+            } else {
+                for last in last_elements.iter_mut() {
+                    if *last > v {
+                        *last = v;
+                        break;
+                    }
                 }
             }
+        } else {
+            last_elements.push(v)
         }
     }
-    l.len() - 1
+    last_elements.len()
 }
