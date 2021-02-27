@@ -78,20 +78,20 @@ fn solve() {
     for p in ep.iter() {
         match p.position {
             Position::Top => {
-                t.remove(&p.seg_id);
+                t.remove(&(p.point.x as usize));
             },
             Position::Bottom => {
-                t.insert(p.seg_id);
+                t.insert(p.point.x as usize);
             },
             Position::Left => {
                 let seg = segments[p.seg_id].clone();
-                //let b = t.range((seg.p1.x as usize)..);
-                //let e = t.range(..(seg.p2.x as usize));
-                //for w in b {
-                //    for x in e.clone() {
-                //        if w == x { cnt += 1; }
-                //    }
-                //}
+                let b = t.range((seg.p1.x as usize)..);
+                let e = t.range(..(seg.p2.x as usize));
+                for w in b {
+                    for x in e.clone() {
+                        if w == x { cnt += 1; }
+                    }
+                }
             },
             Position::Right => {}
         }
