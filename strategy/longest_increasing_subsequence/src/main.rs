@@ -54,24 +54,21 @@ fn naive_lis(a: &Vec<i32>) -> usize {
 fn lis(a: &Vec<i32>) -> usize {
     let n = a.len();
 
-    // a vector where l[i] is the smallest last element of LIS when length of LIS is i + 1
-    let mut l: Vec<i32> = vec![i32::MIN; n];
+    // a vector of the smallest last element of LIS when length of LIS is i + 1
+    let mut l: Vec<i32> = Vec::new();
+    l.push(a[0]);
 
-    // temporary longest length of LIS
-    let mut length: usize = 1;
-
-    for i in 1..n {
-        if l[length] < a[i] {
-            length += 1;
-            l[length] = a[i];
+    for &v in a.iter() {
+        if *l.last().unwrap() < v {
+            l.push(v)
         } else {
-            for j in 0..length {
-                if l[j] > a[i] {
-                    l[j] = a[i];
-                    break
+            for last in l.iter_mut() {
+                if *last > v {
+                    *last = v;
+                    break;
                 }
             }
         }
     }
-    length
+    l.len() - 1
 }
