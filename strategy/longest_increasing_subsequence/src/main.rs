@@ -60,19 +60,22 @@ fn lis(a: &Vec<i32>) -> usize {
     let mut last_elements: Vec<i32> = Vec::new();
 
     for &v in a.iter() {
-        if let Some(last) = last_elements.last() {
-            if *last < v {
-                last_elements.push(v);
-            } else {
-                for last in last_elements.iter_mut() {
-                    if *last > v {
-                        *last = v;
-                        break;
+        match last_elements.last() {
+            Some(last) => {
+                if *last < v {
+                    last_elements.push(v);
+                } else {
+                    for last in last_elements.iter_mut() {
+                        if *last > v {
+                            *last = v;
+                            break;
+                        }
                     }
                 }
+            },
+            None => {
+                last_elements.push(v);
             }
-        } else {
-            last_elements.push(v)
         }
     }
     last_elements.len()
