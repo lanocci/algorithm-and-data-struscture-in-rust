@@ -60,10 +60,11 @@ fn largest_rectangle(histogram: &Vec<Vec<usize>>) -> usize {
                         rect.push_back(Rect{height: tile, left_idx: i});
                     } else if r.height > tile {
                         let mut target = i;
-                        while let Some(prev) = rect.pop_back() {
+                        while let Some(prev) = rect.back() {
                             if prev.height < tile {
                                 break;
                             } else {
+                                let prev = rect.pop_back().unwrap();
                                 size = std::cmp::max(size, prev.height * (i - prev.left_idx));
                                 target = prev.left_idx;
                             }
