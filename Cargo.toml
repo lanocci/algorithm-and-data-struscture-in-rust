@@ -47,6 +47,7 @@ members = [
   "strategy/coin_changing_problem",
   "strategy/knapsac_problem",
   "strategy/longest_increasing_subsequence",
+  "strategy/largest_square",
   "util",
 ]
 exclude = ["computational_geometry", "data_structure", "sorts", "search", "strategy"]
