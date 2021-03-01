@@ -49,6 +49,7 @@ members = [
   "strategy/longest_increasing_subsequence",
   "strategy/largest_square",
   "strategy/largest_rectangle",
+  "strategy/sieve_of_eratosthenes",
   "util",
 ]
 exclude = ["computational_geometry", "data_structure", "sorts", "search", "strategy"]

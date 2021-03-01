@@ -10,4 +10,5 @@ members = [
   "longest_increasing_subsequence",
   "largest_square",
   "largest_rectangle",
+  "sieve_of_eratosthenes",
 ]
