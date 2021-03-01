@@ -50,6 +50,7 @@ members = [
   "strategy/largest_square",
   "strategy/largest_rectangle",
   "strategy/sieve_of_eratosthenes",
+  "strategy/greatest_common_divisor",
   "util",
 ]
 exclude = ["computational_geometry", "data_structure", "sorts", "search", "strategy"]

@@ -11,4 +11,5 @@ members = [
   "largest_square",
   "largest_rectangle",
   "sieve_of_eratosthenes",
+  "greatest_common_divisor",
 ]
