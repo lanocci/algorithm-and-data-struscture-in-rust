@@ -51,6 +51,8 @@ members = [
   "strategy/largest_rectangle",
   "strategy/sieve_of_eratosthenes",
   "strategy/greatest_common_divisor",
+  "strategy/power",
+  "strategy/eight_queens_problem",
   "util",
 ]
 exclude = ["computational_geometry", "data_structure", "sorts", "search", "strategy"]

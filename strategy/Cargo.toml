@@ -12,4 +12,6 @@ members = [
   "largest_rectangle",
   "sieve_of_eratosthenes",
   "greatest_common_divisor",
+  "power",
+  "eight_queens_problem",
 ]
