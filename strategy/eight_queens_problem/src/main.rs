@@ -22,7 +22,7 @@ fn solve() {
         for _ in 0..n{
             let r = sc.read();
             let c = sc.read();
-            presets.push(Position(c, r));
+            presets.push(Position(r, c));
         }
         presets
     };
@@ -57,17 +57,17 @@ fn backtrack(i: usize, row: &mut Vec<usize>, col_free: &mut Vec<bool>, dpos_free
     }
 
     for j in 0..8 {
-        if !col_free[j] || !dpos_free[i + j] || !dneg_free[7 + i - j] { continue; }
-        println!("i: {} j: {}", i, j);
-        row.push(j);
-        col_free[j] = false;
-        dpos_free[i + j] = false;
-        dneg_free[7 + i - j] = false;
-        backtrack(i + 1, row, col_free, dpos_free, dneg_free, preset);
-        row.pop();
-        col_free[i] = true;
-        dpos_free[i + j] = true;
-        dneg_free[7 + i - j] = true;
+        if col_free[j] && dpos_free[i + j] && dneg_free[7 + i - j] { 
+            row.push(j);
+            col_free[j] = false;
+            dpos_free[i + j] = false;
+            dneg_free[7 + i - j] = false;
+            backtrack(i + 1, row, col_free, dpos_free, dneg_free, preset);
+            row.pop();
+            col_free[j] = true;
+            dpos_free[i + j] = true;
+            dneg_free[7 + i - j] = true;
+        }
     }
 }
 
