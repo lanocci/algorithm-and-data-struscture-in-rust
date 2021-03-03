@@ -28,9 +28,6 @@ fn solve() {
     };
 
     eight_queen(&presets);
-    //for i in 0..8 {
-    //    println!("{}Q{}", ".".repeat(result[i]), ".".repeat(7 - result[i]));
-    //}
 }
 
 struct Position(usize, usize);

@@ -53,6 +53,7 @@ members = [
   "strategy/greatest_common_divisor",
   "strategy/power",
   "strategy/eight_queens_problem",
+  "strategy/eight_puzzle",
   "util",
 ]
 exclude = ["computational_geometry", "data_structure", "sorts", "search", "strategy"]
