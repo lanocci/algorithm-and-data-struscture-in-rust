@@ -37,13 +37,13 @@ struct Puzzle {
 
 impl Puzzle {
     const ROW_COUNT: i32 = 3;
-    const TILE_COUNT: i32 = 9;
+
     fn new(tiles: &Vec<usize>) -> Self {
         let mut space_idx = 0;
         let mut f: Vec<usize> = Vec::new();
-        for &t in tiles.iter() {
+        for (i, &t) in tiles.iter().enumerate() {
             if t == 0 {
-                space_idx = t;
+                space_idx = i;
             }
             f.push(t);
         }
@@ -125,10 +125,9 @@ fn eight_puzzle(problem: &Vec<usize>) -> Vec<String> {
 
     let mut v: HashSet<Puzzle> = HashSet::new();
     v.insert(init);
-    let mut ans: Vec<String> = Vec::new();
 
     while let Some(p) = q.pop_front() {
-        if is_target(&p) { return (p.path); }
+        if is_target(&p) { return p.path; }
         let space_location_x = p.space_idx as i32 / Puzzle::ROW_COUNT;
         let space_location_y = p.space_idx as i32 % Puzzle::ROW_COUNT;
 
@@ -152,12 +151,12 @@ fn eight_puzzle(problem: &Vec<usize>) -> Vec<String> {
             }
         }
     }
-    ans
+    unreachable!()
 }
 
 fn is_target(p: &Puzzle) -> bool {
-    for i in 0..p.f.len() {
-        if p.f[i] != i + 1 { return false; }
+    for i in 0..(p.f.len()) {
+        if p.f[i] != (i + 1) % 9 { return false; }
     }
     true
 }
