@@ -15,4 +15,5 @@ members = [
   "power",
   "eight_queens_problem",
   "eight_puzzle",
+  "fifteen_puzzle",
 ]

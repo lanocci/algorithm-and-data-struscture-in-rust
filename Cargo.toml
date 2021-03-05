@@ -54,6 +54,8 @@ members = [
   "strategy/power",
   "strategy/eight_queens_problem",
   "strategy/eight_puzzle",
+  "strategy/fifteen_puzzle",
+  "strategy/puzzle",
   "util",
 ]
 exclude = ["computational_geometry", "data_structure", "sorts", "search", "strategy"]
