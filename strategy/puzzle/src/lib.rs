@@ -2,15 +2,21 @@ use std::cmp::Ordering;
 use std::fmt;
 
 #[derive(Eq, Clone, Hash)]
-pub struct Puzzle {
-    pub f: Vec<usize>,
-    pub space_idx: usize,
-    pub path: Vec<String>,
-    pub row_count: i32,
+pub enum Puzzle {
+    EightPuzzle {
+        f: Vec<usize>,
+        space_idx: usize,
+        path: Vec<String>,
+    },
+    FifteenPuzzle {
+        f: Vec<usize>,
+        space_idx: usize,
+        path: Vec<String>,
+    }
 }
 
 impl Puzzle {
-    pub fn new(tiles: &Vec<usize>, row_count: i32) -> Self {
+    pub fn new(tiles: &Vec<usize>) -> Self {
         let mut space_idx = 0;
         let mut f: Vec<usize> = Vec::new();
         for (i, &t) in tiles.iter().enumerate() {
@@ -20,17 +26,31 @@ impl Puzzle {
             f.push(t);
         }
         let path = Vec::new();
-        Self { f, space_idx, path, row_count }
+        match tiles.len() {
+            9 => Self::EightPuzzle { f, space_idx, path },
+            15 => Self::FifteenPuzzle { f, space_idx, path },
+            _ => panic!()
+        }
+    }
+
+    pub fn get_tiles(&self) -> Vec<usize> {
+        match self {
+            Self::EightPuzzle{f,..} => f.clone(),
+            Self::FifteenPuzzle{f,..} => f.clone(),
+        }
     }
 }
 
 impl PartialEq for Puzzle {
     fn eq(&self, other: &Self) -> bool {
-        for i in 0..self.f.len() {
-            if self.f[i] != other.f[i] { return false; }
+        let self_tiles = self.get_tiles();
+        let other_tiles = other.get_tiles();
+        for i in 0..self_tiles.len() {
+            if self_tiles[i] != other_tiles[i] { return false; }
         }
         true
     }
+
 }
 
 impl PartialOrd for Puzzle {
@@ -41,10 +61,12 @@ impl PartialOrd for Puzzle {
 
 impl Ord for Puzzle {
     fn cmp(&self, other: &Self) -> Ordering {
-        for i in 0..self.f.len() {
-            if self.f[i] == other.f[i] { continue; }
-            else if self.f[i] > other.f[i] { return Ordering::Greater; }
-            else if self.f[i] < other.f[i] { return Ordering::Less; }
+        let self_tiles = self.get_tiles();
+        let other_tiles = other.get_tiles();
+        for i in 0..self_tiles.len() {
+            if self_tiles[i] == other_tiles[i] { continue; }
+            else if self_tiles[i] > other_tiles[i] { return Ordering::Greater; }
+            else if self_tiles[i] < other_tiles[i] { return Ordering::Less; }
         }
         Ordering::Equal
     }

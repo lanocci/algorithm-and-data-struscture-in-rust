@@ -29,7 +29,7 @@ fn solve() {
 
 fn eight_puzzle(problem: &Vec<usize>) -> Vec<String> {
     let mut q: VecDeque<Puzzle> = VecDeque::new();
-    let init = Puzzle::new(problem, 3);
+    let init = Puzzle::new(problem);
     q.push_back(init.clone());
 
     let directions = vec![Direction::Up, Direction::Left, Direction::Down, Direction::Right];
