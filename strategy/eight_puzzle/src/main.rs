@@ -1,6 +1,6 @@
 use std::io::*;
-use util::{Scanner, Joinable};
-use puzzle::Puzzle;
+use util::Scanner;
+use puzzle::{Puzzle, EightPuzzle};
 
 fn main() {
     std::thread::Builder::new()
@@ -23,7 +23,7 @@ fn solve() {
         }
         problem
     };
-    let puzzle = Puzzle::new(&problem);
+    let puzzle = EightPuzzle::new(&problem);
     let ans = puzzle.solve_naive();
-    println!("{}", ans.get_path().len());
+    println!("{}", ans.get_move_count());
 }
