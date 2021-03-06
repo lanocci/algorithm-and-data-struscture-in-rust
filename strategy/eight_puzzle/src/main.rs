@@ -23,7 +23,7 @@ fn solve() {
         }
         problem
     };
-    let puzzle = EightPuzzle::new(&problem);
-    let ans = puzzle.solve_naive();
+    let puzzle = EightPuzzle::generate(&problem);
+    let ans = puzzle.solve();
     println!("{}", ans.get_move_count());
 }
