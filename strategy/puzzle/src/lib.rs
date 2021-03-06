@@ -18,7 +18,6 @@ pub trait Puzzle {
         }
         true
     }
-    fn solve(&self) -> Self;
 }
 
 #[derive(Eq, PartialOrd, Clone, Hash)]
@@ -54,8 +53,10 @@ impl Puzzle for EightPuzzle {
     fn get_tiles(&self) -> Vec<usize> {
         self.f.clone()
     }
+}
 
-    fn solve(&self) -> Self {
+impl EightPuzzle {
+    pub fn solve(&self) -> Result<Self, &str> {
         let mut q: VecDeque<EightPuzzle> = VecDeque::new();
         q.push_back(self.clone());
 
@@ -65,7 +66,7 @@ impl Puzzle for EightPuzzle {
         v.insert(self.clone());
         
         while let Some(pzl) = q.pop_front() {
-            if pzl.is_target() { return pzl; }
+            if pzl.is_target() { return Ok(pzl); }
             let space_location_x = pzl.space_idx / Self::ROW_COUNT;
             let space_location_y = pzl.space_idx % Self::ROW_COUNT;
         
@@ -89,7 +90,7 @@ impl Puzzle for EightPuzzle {
                 }
             }
         }
-        unreachable!()
+        Err("could not solve")
     }
 
 }
@@ -151,43 +152,6 @@ impl Puzzle for FifteenPuzzle {
 
     fn get_tiles(&self) -> Vec<usize> {
         self.f.clone()
-    }
-
-    fn solve(&self) -> Self {
-        let mut q: VecDeque<FifteenPuzzle> = VecDeque::new();
-        q.push_back(self.clone());
-
-        let directions = vec![Direction::Up, Direction::Left, Direction::Down, Direction::Right];
-        
-        let mut v: HashSet<FifteenPuzzle> = HashSet::new();
-        v.insert(self.clone());
-        
-        while let Some(pzl) = q.pop_front() {
-            if pzl.is_target() { return pzl; }
-            let space_location_x = pzl.space_idx / Self::ROW_COUNT;
-            let space_location_y = pzl.space_idx % Self::ROW_COUNT;
-        
-            for d in directions.iter() {
-                let target_tile_location_x = space_location_x as i32 + d.vertical_move();
-                let target_tile_location_y = space_location_y as i32 + d.horizontal_move();
-                if target_tile_location_x < 0 || target_tile_location_y < 0 || target_tile_location_x >= Self::ROW_COUNT as i32 || target_tile_location_y >= Self::ROW_COUNT as i32 { continue; }
-                let mut u = pzl.clone();
-                let new_space_idx = (target_tile_location_x * Self::ROW_COUNT as i32 + target_tile_location_y) as usize;
-                let old_tile = u.f[new_space_idx];
-                u.f[pzl.space_idx] = old_tile;
-                u.f[new_space_idx] = 0;
-                u.space_idx = new_space_idx;
-                match v.get(&u) {
-                    None => {
-                        v.insert(u.clone());
-                        u.path.push(d.to_string());
-                        q.push_back(u);
-                    },
-                    Some(_) => {}
-                }
-            }
-        }
-        unreachable!()
     }
 
 }

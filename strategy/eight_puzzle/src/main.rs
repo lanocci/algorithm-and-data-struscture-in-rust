@@ -24,6 +24,6 @@ fn solve() {
         problem
     };
     let puzzle = EightPuzzle::generate(&problem);
-    let ans = puzzle.solve();
+    let ans = puzzle.solve().unwrap();
     println!("{}", ans.get_move_count());
 }
