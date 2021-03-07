@@ -24,6 +24,7 @@ fn solve() {
         problem
     };
     let puzzle = FifteenPuzzle::generate(&problem);
+    //let result = puzzle.solve_with_a_star().unwrap();
     let result = puzzle.solve_with_iterative_deepening_a_star().unwrap();
     println!("{}", result.get_move_count());
 }

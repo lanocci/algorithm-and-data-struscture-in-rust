@@ -1,6 +1,7 @@
 use std::cmp::Ordering;
-use std::collections::{VecDeque, HashSet};
+use std::collections::{VecDeque, HashSet, BinaryHeap};
 use std::fmt;
+use util::Joinable;
 
 pub trait Puzzle {
     const ROW_COUNT: usize;
@@ -156,6 +157,18 @@ impl Puzzle for FifteenPuzzle {
 }
 
 impl FifteenPuzzle {
+    fn vertical_space_location(&self) -> usize {
+        self.space_idx / Self::ROW_COUNT
+    }
+    fn horizontal_space_location(&self) -> usize {
+        self.space_idx % Self::ROW_COUNT
+    }
+    fn vertical_target_tile_location(&self, dir: &Direction) -> i32 {
+        self.vertical_space_location() as i32 + dir.vertical_move()
+    }
+    fn horizontal_target_tile_location(&self, dir: &Direction) -> i32 {
+        self.horizontal_space_location() as i32 + dir.horizontal_move()
+    }
     fn manhattan_distances() -> Vec<Vec<usize>> {
         (0..Self::TILE_COUNT as i32).map(|i| {
             (0..Self::TILE_COUNT as i32).map(|j| { 
@@ -182,12 +195,9 @@ impl FifteenPuzzle {
         if md == 0 { return Ok(self.clone()); }
         if depth + md > limit { return Err("answer not found within limit".to_string()) }
 
-        let space_idx_x = self.space_idx / Self::ROW_COUNT;
-        let space_idx_y = self.space_idx % Self::ROW_COUNT;
-
         for d in directions.iter() {
-            let target_tile_location_x = space_idx_x as i32 + d.vertical_move();
-            let target_tile_location_y = space_idx_y as i32 + d.horizontal_move();
+            let target_tile_location_x = self.vertical_target_tile_location(&d);
+            let target_tile_location_y = self.horizontal_target_tile_location(&d);
             let target_tile_location = target_tile_location_x * Self::ROW_COUNT as i32 + target_tile_location_y;
             if target_tile_location_x < 0 || target_tile_location_y < 0 || target_tile_location_x >= Self::ROW_COUNT as i32 || target_tile_location_y >= Self::ROW_COUNT as i32 { continue; }
             if let Some(p) = prev { if d.is_opposite(p) { continue; } }
@@ -217,6 +227,46 @@ impl FifteenPuzzle {
             sum += manhattan_distances[i][self.f[i] - 1];
         }
         sum
+    }
+
+    pub fn solve_with_a_star(&self) -> Result<Self, String> {
+        let mut pq: BinaryHeap<FifteenPuzzle> = BinaryHeap::new();
+        let directions = Direction::all();
+        let mds = Self::manhattan_distances();
+        let mut v: HashSet<FifteenPuzzle> = HashSet::new();
+        v.insert(self.clone());
+
+        pq.push(self.clone());
+
+        while let Some(pzl) = pq.pop() {
+            println!("{}", pzl.f.iter().join(" "));
+            if pzl.sum_of_manhattan_distance(&mds) == 0 { return Ok(pzl.clone()); }
+            v.insert(pzl.clone());
+            let space_idx_x = self.space_idx / Self::ROW_COUNT;
+            let space_idx_y = self.space_idx % Self::ROW_COUNT;
+            for d in directions.iter() {
+                let vtt = space_idx_x as i32 + d.vertical_move();
+                let htt = space_idx_y as i32 + d.horizontal_move();
+                if vtt < 0 || htt < 0 || vtt >= Self::ROW_COUNT as i32|| htt >= Self::ROW_COUNT as i32 { continue; }
+                let tt = (vtt * Self::ROW_COUNT as i32 + htt) as usize;
+                let mut u = pzl.clone();
+                let old_tile = u.f[tt as usize];
+                u.f[pzl.space_idx] = old_tile;
+                u.f[tt as usize] = 0;
+                u.space_idx = tt;
+                println!("vtt: {}, htt: {}, tt: {}, space_idx: {}, u.space: {}, old: {}", vtt, htt, tt, self.space_idx, u.space_idx, old_tile);
+
+                match v.get(&u) {
+                    None => {
+                        println!("pushing: {}", u.f.iter().join(" "));
+                        u.path.push(d.to_string());
+                        pq.push(u.clone());
+                    },
+                    Some(_) => { }
+                }
+            }
+        }
+        Err("unsolvable".to_string())
     }
 }
 
