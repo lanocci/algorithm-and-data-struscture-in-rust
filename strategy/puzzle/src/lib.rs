@@ -60,7 +60,7 @@ impl EightPuzzle {
         let mut q: VecDeque<EightPuzzle> = VecDeque::new();
         q.push_back(self.clone());
 
-        let directions = vec![Direction::Up, Direction::Left, Direction::Down, Direction::Right];
+        let directions = Direction::all();
         
         let mut v: HashSet<EightPuzzle> = HashSet::new();
         v.insert(self.clone());
@@ -131,7 +131,6 @@ impl Puzzle for FifteenPuzzle {
 
     const ROW_COUNT: usize = 4;
     const TILE_COUNT: usize = 16;
-
     fn generate(tiles: &Vec<usize>) -> Self {
         if tiles.len() != Self::TILE_COUNT { panic!(); }
         let mut space_idx = 0;
@@ -154,6 +153,71 @@ impl Puzzle for FifteenPuzzle {
         self.f.clone()
     }
 
+}
+
+impl FifteenPuzzle {
+    fn manhattan_distances() -> Vec<Vec<usize>> {
+        (0..Self::TILE_COUNT as i32).map(|i| {
+            (0..Self::TILE_COUNT as i32).map(|j| { 
+                (i / Self::ROW_COUNT as i32 - j / Self::ROW_COUNT as i32).abs() as usize + (i % Self::ROW_COUNT as i32 - j % Self::ROW_COUNT as i32).abs() as usize
+            })
+            .collect::<Vec<_>>()
+        })
+        .collect()
+    }
+    pub fn solve_with_iterative_deepening_a_star(&self) -> Result<FifteenPuzzle, String> {
+        let manhattan_distances = Self::manhattan_distances();
+        let sum_md = self.sum_of_manhattan_distance(&Self::manhattan_distances());
+
+        for limit in sum_md..100 {
+            if let Ok(ans) = self.dfs(0, limit, &None, &manhattan_distances, &Direction::all()) {
+                return Ok(ans)
+            }
+        }
+        Err("unsolvable".to_string())
+    }
+
+    fn dfs(&self, depth: usize, limit: usize, prev: &Option<Direction>, mds: &Vec<Vec<usize>>, directions: &Vec<Direction>) -> Result<Self, String> {
+        let md = self.sum_of_manhattan_distance(mds);
+        if md == 0 { return Ok(self.clone()); }
+        if depth + md > limit { return Err("answer not found within limit".to_string()) }
+
+        let space_idx_x = self.space_idx / Self::ROW_COUNT;
+        let space_idx_y = self.space_idx % Self::ROW_COUNT;
+
+        for d in directions.iter() {
+            let target_tile_location_x = space_idx_x as i32 + d.vertical_move();
+            let target_tile_location_y = space_idx_y as i32 + d.horizontal_move();
+            let target_tile_location = target_tile_location_x * Self::ROW_COUNT as i32 + target_tile_location_y;
+            if target_tile_location_x < 0 || target_tile_location_y < 0 || target_tile_location_x >= Self::ROW_COUNT as i32 || target_tile_location_y >= Self::ROW_COUNT as i32 { continue; }
+            if let Some(p) = prev { if d.is_opposite(p) { continue; } }
+            let mut tmp = self.clone();
+
+            let old_tile = tmp.f[target_tile_location as usize];
+            tmp.f[self.space_idx] = old_tile;
+            tmp.f[target_tile_location as usize] = 0;
+            tmp.space_idx = target_tile_location as usize;
+            if let Ok(pzl) = tmp.dfs(depth + 1, limit, &Some(d.clone()), mds, directions) {
+                let mut ans = pzl.clone();
+                ans.path.push(d.to_string());
+                return Ok(ans)
+            }
+        }
+        Err("answer not found".to_string())
+    }
+
+    /// manhattan_distances[i][j] は
+    /// i 番目の要素が j だったときのマンハッタン距離を表している
+    /// このマンハッタン距離は、配列が0, 1, 2, ..., 15 の順番で並んでいる時と比較した時の距離として設定されている
+    /// self.f は 1, 2, 3, ..., 15, 0 と並んでいることを期待しているので、jにはself.f[i] - 1 を入れ, self.f[i] == 0の時はスキップする
+    fn sum_of_manhattan_distance(&self, manhattan_distances: &Vec<Vec<usize>>) -> usize {
+        let mut sum = 0;
+        for i in 0..Self::TILE_COUNT {
+            if self.f[i] == 0 { continue; }
+            sum += manhattan_distances[i][self.f[i] - 1];
+        }
+        sum
+    }
 }
 
 impl PartialEq for FifteenPuzzle {
@@ -181,6 +245,8 @@ impl Ord for FifteenPuzzle {
     }
 }
 
+
+#[derive(Clone)]
 pub enum Direction {
     Up,
     Down,
@@ -215,6 +281,39 @@ impl Direction {
             Self::Up => -1,
             Self::Down => 1,
             _ => 0
+        }
+    }
+
+    pub fn all() -> Vec<Self> {
+        vec![Self::Up, Self::Left, Self::Down, Self::Right]
+    }
+
+    pub fn is_opposite(&self, other: &Self) -> bool {
+        match self {
+            Self::Up => {
+                match other {
+                    Self::Down => true,
+                    _ => false,
+                }
+            },
+            Self::Down => {
+                match other {
+                    Self::Up => true,
+                    _ => false,
+                }
+            },
+            Self::Right => {
+                match other {
+                    Self::Left => true,
+                    _ => false,
+                }
+            },
+            Self::Left => {
+                match other {
+                    Self::Right => true,
+                    _ => false,
+                }
+            }
         }
     }
 }
