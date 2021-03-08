@@ -1,6 +1,7 @@
 use std::cmp::Ordering;
 use std::collections::{VecDeque, HashSet, BinaryHeap};
 use std::fmt;
+use std::hash::{Hash, Hasher};
 use util::Joinable;
 
 pub trait Puzzle {
@@ -121,7 +122,7 @@ impl Ord for EightPuzzle {
     }
 }
 
-#[derive(Eq, PartialOrd, Clone, Hash)]
+#[derive(Eq, PartialOrd, Clone)]
 pub struct FifteenPuzzle {
     f: Vec<usize>,
     space_idx: usize,
@@ -230,39 +231,38 @@ impl FifteenPuzzle {
     }
 
     pub fn solve_with_a_star(&self) -> Result<Self, String> {
-        let mut pq: BinaryHeap<FifteenPuzzle> = BinaryHeap::new();
+        let mut pq: BinaryHeap<State> = BinaryHeap::new();
         let directions = Direction::all();
         let mds = Self::manhattan_distances();
         let mut v: HashSet<FifteenPuzzle> = HashSet::new();
         v.insert(self.clone());
+        println!("{}", v.get(self).unwrap().f.iter().join(" "));
 
-        pq.push(self.clone());
+        pq.push(State{puzzle: self.clone(), estimated: self.sum_of_manhattan_distance(&mds)});
 
-        while let Some(pzl) = pq.pop() {
-            println!("{}", pzl.f.iter().join(" "));
-            if pzl.sum_of_manhattan_distance(&mds) == 0 { return Ok(pzl.clone()); }
-            v.insert(pzl.clone());
-            let space_idx_x = self.space_idx / Self::ROW_COUNT;
-            let space_idx_y = self.space_idx % Self::ROW_COUNT;
+        while let Some(state) = pq.pop() {
+            println!("popped: {}, estimated: {}", state.puzzle.f.iter().join(" "), state.estimated);
+            if state.puzzle.sum_of_manhattan_distance(&mds) == 0 { return Ok(state.puzzle.clone()); }
             for d in directions.iter() {
-                let vtt = space_idx_x as i32 + d.vertical_move();
-                let htt = space_idx_y as i32 + d.horizontal_move();
+                let mut u = state.puzzle.clone();
+                let vtt = u.vertical_target_tile_location(&d);
+                let htt = u.horizontal_target_tile_location(&d);
                 if vtt < 0 || htt < 0 || vtt >= Self::ROW_COUNT as i32|| htt >= Self::ROW_COUNT as i32 { continue; }
                 let tt = (vtt * Self::ROW_COUNT as i32 + htt) as usize;
-                let mut u = pzl.clone();
                 let old_tile = u.f[tt as usize];
-                u.f[pzl.space_idx] = old_tile;
+                u.f[u.space_idx] = old_tile;
                 u.f[tt as usize] = 0;
                 u.space_idx = tt;
-                println!("vtt: {}, htt: {}, tt: {}, space_idx: {}, u.space: {}, old: {}", vtt, htt, tt, self.space_idx, u.space_idx, old_tile);
+                println!("vtt: {}, htt: {}, tt: {}, u.space: {}, old: {}", vtt, htt, tt, u.space_idx, old_tile);
 
                 match v.get(&u) {
                     None => {
                         println!("pushing: {}", u.f.iter().join(" "));
                         u.path.push(d.to_string());
-                        pq.push(u.clone());
+                        v.insert(u.clone());
+                        pq.push(State{puzzle: u.clone(), estimated: u.sum_of_manhattan_distance(&mds)});
                     },
-                    Some(_) => { }
+                    Some(_) => {}
                 }
             }
         }
@@ -291,6 +291,33 @@ impl Ord for FifteenPuzzle {
             else if self_tiles[i] > other_tiles[i] { return Ordering::Greater; }
             else if self_tiles[i] < other_tiles[i] { return Ordering::Less; }
         }
+        Ordering::Equal
+    }
+}
+
+impl Hash for FifteenPuzzle {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.f.hash(state);
+    }
+}
+
+#[derive(PartialOrd, Eq)]
+struct State {
+    puzzle: FifteenPuzzle,
+    estimated: usize,
+}
+
+impl PartialEq for State {
+    fn eq(&self, other: &Self) -> bool {
+        if self.puzzle == other.puzzle { true }
+        else { false }
+    }
+}
+
+impl Ord for State {
+    fn cmp(&self, other: &Self) -> Ordering {
+        if self.estimated < other.estimated { return Ordering::Greater; }
+        else if self.estimated > other.estimated { return Ordering::Less; }
         Ordering::Equal
     }
 }
