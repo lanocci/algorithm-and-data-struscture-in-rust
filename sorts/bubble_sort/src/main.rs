@@ -1,23 +1,29 @@
-use common::{trace, UserInput, handle_numeric_input};
+use util::{Scanner, Joinable};
 
-fn bubble_sort(mut a: Vec<i32>) -> () {
+fn bubble_sort(a: &Vec<usize>) -> Vec<usize> {
+    let mut result = a.clone();
     let mut flag: bool = true;
     let n: usize = a.len();
     while flag {
         flag = false;
         for j in (1..n).rev() {
-            if a[j - 1] > a[j] {
-                let tmp = a[j];
-                a[j] = a[j - 1];
-                a[j - 1] = tmp;
+            if result[j - 1] > result[j] {
+                let tmp = result[j];
+                result[j] = result[j - 1];
+                result[j - 1] = tmp;
                 flag = true;
             }
         }
-        trace(&a);
     }
+    result
 }
 
 fn main() {
-    let input = handle_numeric_input();
-    bubble_sort(input.vec);
+    let cin = std::io::stdin();
+    let cin = cin.lock();
+    let mut sc = Scanner::new(cin);
+    let n = sc.read();
+    let input: Vec<usize> = sc.vec(n);
+    let result = bubble_sort(&input);
+    println!("{}", result.iter().join(" "));
 }
