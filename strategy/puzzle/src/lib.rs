@@ -2,7 +2,6 @@ use std::cmp::Ordering;
 use std::collections::{VecDeque, HashSet, BinaryHeap};
 use std::fmt;
 use std::hash::{Hash, Hasher};
-use util::Joinable;
 
 pub trait Puzzle {
     const ROW_COUNT: usize;
@@ -236,12 +235,10 @@ impl FifteenPuzzle {
         let mds = Self::manhattan_distances();
         let mut v: HashSet<FifteenPuzzle> = HashSet::new();
         v.insert(self.clone());
-        println!("{}", v.get(self).unwrap().f.iter().join(" "));
 
         pq.push(State{puzzle: self.clone(), estimated: self.sum_of_manhattan_distance(&mds)});
 
         while let Some(state) = pq.pop() {
-            println!("popped: {}, estimated: {}", state.puzzle.f.iter().join(" "), state.estimated);
             if state.puzzle.sum_of_manhattan_distance(&mds) == 0 { return Ok(state.puzzle.clone()); }
             for d in directions.iter() {
                 let mut u = state.puzzle.clone();
@@ -253,11 +250,9 @@ impl FifteenPuzzle {
                 u.f[u.space_idx] = old_tile;
                 u.f[tt as usize] = 0;
                 u.space_idx = tt;
-                println!("vtt: {}, htt: {}, tt: {}, u.space: {}, old: {}", vtt, htt, tt, u.space_idx, old_tile);
 
                 match v.get(&u) {
                     None => {
-                        println!("pushing: {}", u.f.iter().join(" "));
                         u.path.push(d.to_string());
                         v.insert(u.clone());
                         pq.push(State{puzzle: u.clone(), estimated: u.sum_of_manhattan_distance(&mds)});
@@ -301,7 +296,7 @@ impl Hash for FifteenPuzzle {
     }
 }
 
-#[derive(PartialOrd, Eq)]
+#[derive(Eq)]
 struct State {
     puzzle: FifteenPuzzle,
     estimated: usize,
@@ -309,11 +304,16 @@ struct State {
 
 impl PartialEq for State {
     fn eq(&self, other: &Self) -> bool {
-        if self.puzzle == other.puzzle { true }
+        if self.estimated == other.estimated { true }
         else { false }
     }
 }
 
+impl PartialOrd for State {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
 impl Ord for State {
     fn cmp(&self, other: &Self) -> Ordering {
         if self.estimated < other.estimated { return Ordering::Greater; }
