@@ -298,8 +298,8 @@ impl Hash for FifteenPuzzle {
 
 #[derive(Eq)]
 struct State {
-    puzzle: FifteenPuzzle,
     estimated: usize,
+    puzzle: FifteenPuzzle,
 }
 
 impl PartialEq for State {
@@ -309,12 +309,15 @@ impl PartialEq for State {
     }
 }
 
+/// #[derive(PartialOrd)] だとsolve_with_a_starがうまく動かないので明示的に定義
 impl PartialOrd for State {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.cmp(other))
     }
 }
+
 impl Ord for State {
+    /// Reverse order to generate min-heap using `std::collections::BinaryHeap` in solve_with_a_star
     fn cmp(&self, other: &Self) -> Ordering {
         if self.estimated < other.estimated { return Ordering::Greater; }
         else if self.estimated > other.estimated { return Ordering::Less; }
