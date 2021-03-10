@@ -1,41 +1,39 @@
-use common::{trace, UserStringInput, handle_string_input};
+use util::{Scanner, Joinable};
 
 fn extract_num(s: &str) -> i32 {
     s[1..2].parse::<i32>().unwrap()
 }
 
 fn bubble_sort(a: &Vec<String>) -> Vec<String> {
-    let mut cloned = a.clone();
-    for i in 0..(cloned.len()) {
-        for j in ((i + 1)..(cloned.len())).rev() {
-            if extract_num(&cloned[j]) < extract_num(&cloned[j - 1]) {
-                let right = &cloned[j].clone();
-                let left = &cloned[j - 1].clone();
-                cloned[j] = left.to_string();
-                cloned[j - 1] = right.to_string();
+    let mut result = a.clone();
+    for i in 0..(result.len()) {
+        for j in ((i + 1)..(result.len())).rev() {
+            if extract_num(&result[j]) < extract_num(&result[j - 1]) {
+                let right = &result[j].clone();
+                let left = &result[j - 1].clone();
+                result[j] = left.to_string();
+                result[j - 1] = right.to_string();
             }
         }
-        trace(&cloned);
     }
-    cloned
+    result
 }
 
 fn selection_sort(a: &Vec<String>) -> Vec<String> {
-    let mut cloned = a.clone();
-    for i in 0..(cloned.len()) {
+    let mut result = a.clone();
+    for i in 0..(result.len()) {
         let mut minj = i;
-        for j in i..(cloned.len()) {
-            if extract_num(&cloned[j]) < extract_num(&cloned[minj]) {
+        for j in i..(result.len()) {
+            if extract_num(&result[j]) < extract_num(&result[minj]) {
                 minj = j;
             }
         }
-        let min = &cloned[minj].clone();
-        let index_position = &cloned[i].clone();
-        cloned[minj] = index_position.to_string();
-        cloned[i] = min.to_string();
-        trace(&cloned)
+        let min = &result[minj].clone();
+        let index_position = &result[i].clone();
+        result[minj] = index_position.to_string();
+        result[i] = min.to_string();
     }
-    cloned
+    result
 }
 
 fn is_stable(org: &Vec<String>, sorted: &Vec<String>) -> bool {
@@ -53,10 +51,33 @@ fn is_stable(org: &Vec<String>, sorted: &Vec<String>) -> bool {
     return true
 }
 
+/// sort out an array of cards in bubble sort and selection sort.
+/// reports sorted array and if the sort was stable or not.
+/// 
+/// example input: 
+/// ```
+/// 5 # number of cards
+/// H4 C9 S4 D2 C3 # array of cards represented with initial letter of the suits and numbers
+/// ```
+/// example output
+/// ```
+/// D2 C3 H4 S4 C9
+/// Stable
+/// D2 C3 S4 H4 C9
+/// Not stable
+/// ```
 fn main() {
-    let input = handle_string_input();
-    let bubble_sorted = bubble_sort(& input.vec);
-    println!("bubble sort is stable: {}", is_stable(&input.vec, &bubble_sorted));
-    let selection_sorted = selection_sort(& input.vec);
-    println!("selection sort is stable: {}", is_stable(&input.vec, &selection_sorted));
+    let cin = std::io::stdin();
+    let cin = cin.lock();
+    let mut sc = Scanner::new(cin);
+    let n = sc.read();
+    let vec: Vec<String> = sc.vec(n);
+    let bubble_sorted = bubble_sort(&vec);
+    println!("{}", bubble_sorted.iter().join(" "));
+    if is_stable(&vec, &bubble_sorted) { println!("Stable"); }
+    else { println!("Not stable"); }
+    let selection_sorted = selection_sort(&vec);
+    println!("{}", selection_sorted.iter().join(" "));
+    if is_stable(&vec, &selection_sorted) { println!("Stable"); }
+    else { println!("Not stable"); }
 }
