@@ -21,4 +21,5 @@ members = [
   "disjoint_set",
   "kd_tree",
   "diameter_of_a_tree",
+  "areas_on_the_cross_section_diagram",
 ]
