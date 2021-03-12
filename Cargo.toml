@@ -41,6 +41,7 @@ members = [
   "search/binary_search",
   "search/hash",
   "search/articulation_point",
+  "search/allocation",
   "strategy/devide_and_concur_search",
   "strategy/koch_curve",
   "strategy/fibonacci",
