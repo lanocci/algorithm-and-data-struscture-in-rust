@@ -11,4 +11,5 @@ members = [
   "topological_sort",
   "shell_sort",
   "number_of_inversions",
+  "minimum_cost_sort",
 ]
