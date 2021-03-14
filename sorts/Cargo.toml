@@ -10,4 +10,5 @@ members = [
   "counting_sort",
   "topological_sort",
   "shell_sort",
+  "number_of_inversions",
 ]

@@ -37,6 +37,7 @@ members = [
   "sorts/counting_sort",
   "sorts/topological_sort",
   "sorts/shell_sort",
+  "sorts/number_of_inversions",
   "search/linear_search",
   "search/binary_search",
   "search/hash",
