@@ -19,6 +19,8 @@ fn solve() {
 
     let vec: Vec<usize> = sc.vec(n);
 
+    let smallest = *vec.iter().min().unwrap() as i32;
+
     let sorted = {
         let mut a = vec.clone();
         a.sort();
@@ -33,25 +35,25 @@ fn solve() {
         t
     };
 
-    let mut has_loop: Vec<bool> = vec![false; n];
+    let mut cycle_found: Vec<bool> = vec![false; n];
     let mut ans = 0;
 
     for i in 0..n {
-        if has_loop[i] { continue; }
+        if cycle_found[i] { continue; }
         let mut cur = i;
-        let mut s: i32 = 0;
-        let mut an: i32 = 0;
-        let mut m = i32::MAX;
+        let mut sum_weights_in_cycle: i32 = 0;
+        let mut cycle_size: i32 = 0;
+        let mut minimum_in_cycle = i32::MAX;
         loop {
-            has_loop[cur] = true;
-            an += 1;
+            cycle_found[cur] = true;
+            cycle_size += 1;
             let v = vec[cur] as i32;
-            m = std::cmp::min(m, v);
-            s += v;
+            minimum_in_cycle = std::cmp::min(minimum_in_cycle, v);
+            sum_weights_in_cycle += v;
             cur = sorted_indices[v as usize];
-            if has_loop[cur] { break; }
+            if cycle_found[cur] { break; }
         }
-        ans += std::cmp::min(s + (an - 2) * m, m + s + (an + 1) * s);
+        ans += std::cmp::min(sum_weights_in_cycle + (cycle_size - 2) * minimum_in_cycle, minimum_in_cycle + sum_weights_in_cycle + (cycle_size + 1) * smallest);
     }
 
     println!("{}", ans);
