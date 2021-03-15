@@ -22,4 +22,5 @@ members = [
   "kd_tree",
   "diameter_of_a_tree",
   "areas_on_the_cross_section_diagram",
+  "reconstruction_of_the_tree",
 ]

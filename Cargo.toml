@@ -27,6 +27,7 @@ members = [
   "data_structure/kd_tree",
   "data_structure/diameter_of_a_tree",
   "data_structure/areas_on_the_cross_section_diagram",
+  "data_structure/reconstruction_of_the_tree",
   "sorts/bubble_sort",
   "sorts/insertion_sort",
   "sorts/judge_stable",
